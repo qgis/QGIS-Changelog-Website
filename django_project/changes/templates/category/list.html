@@ -29,7 +29,7 @@
                         </span>
                         <span>New Category</span>
                     </a>
-                    {% if user.is_staff or user in the_project.changelog_managers.all or user == the_project.owner %}
+                    {% comment %} {% if user.is_staff or user in the_project.changelog_managers.all or user == the_project.owner %}
                         <a class="button is-light"
                             href='{% url "category-order"  %}'
                             title="Order Categories">
@@ -37,7 +37,7 @@
                                 <i class="fas fa-sort"></i>
                             </span>
                         </a>
-                    {% endif %}
+                    {% endif %} {% endcomment %}
                 </div>
                 <span id="order-saved" hidden class="notification is-success is-light" style="font-size: 9pt; padding: 3px; font-style: italic;">
                     order saved

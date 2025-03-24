@@ -134,12 +134,12 @@ class SponsorshipPeriodListView(
         """
         context = super(SponsorshipPeriodListView,
                         self).get_context_data(**kwargs)
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         project = Project.objects.get(slug=project_slug)
         context['num_sponsorshipperiods'] = \
             self.get_queryset().count()
         context['unapproved'] = False
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         context['project_slug'] = project_slug
         if project_slug:
             context['project'] = project
@@ -156,7 +156,7 @@ class SponsorshipPeriodListView(
         :raises: Http404
         """
         if self.queryset is None:
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if project_slug:
                 project = Project.objects.get(slug=project_slug)
                 queryset = \
@@ -210,7 +210,7 @@ class SponsorshipPeriodDetailView(SponsorshipPeriodMixin, DetailView):
         if queryset is None:
             queryset = self.get_queryset()
             slug = self.kwargs.get('slug', None)
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if slug and project_slug:
                 project = Project.objects.get(slug=project_slug)
                 obj = queryset.get(project=project, slug=slug)
@@ -230,7 +230,7 @@ class SponsorshipPeriodDetailView(SponsorshipPeriodMixin, DetailView):
         """
         context = super(SponsorshipPeriodDetailView,
                         self).get_context_data(**kwargs)
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         if project_slug:
             context['project'] = Project.objects.get(slug=project_slug)
         return context
@@ -260,7 +260,7 @@ class SponsorshipPeriodDeleteView(
         :returns: Unaltered request object
         :rtype: HttpResponse
         """
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.sponsor_period_slug = self.kwargs.get('slug', None)
         self.project = Project.objects.get(slug=self.project_slug)
         self.sponsorperiod = SponsorshipPeriod.objects.get(
@@ -284,7 +284,7 @@ class SponsorshipPeriodDeleteView(
         :returns: Unaltered request object
         :rtype: HttpResponse
         """
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         return super(
                 SponsorshipPeriodDeleteView,
@@ -330,7 +330,7 @@ class SponsorshipPeriodDeleteView(
         """
         context = super(SponsorshipPeriodDeleteView,
                         self).get_context_data(**kwargs)
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         if project_slug:
             context['project'] = Project.objects.get(slug=project_slug)
         return context
@@ -395,7 +395,7 @@ class SponsorshipPeriodCreateView(
         :rtype: dict
         """
         kwargs = super(SponsorshipPeriodCreateView, self).get_form_kwargs()
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         kwargs.update({
             'user': self.request.user,
@@ -425,7 +425,7 @@ class SponsorshipPeriodUpdateView(
         sponsor_period_slug = self.kwargs.get('slug', None)
         self.sponsorperiod = SponsorshipPeriod.objects.get(
             slug=sponsor_period_slug)
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         kwargs.update({
             'user': self.request.user,
@@ -459,7 +459,7 @@ class SponsorshipPeriodUpdateView(
         :rtype: QuerySet
         """
 
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         qs = SponsorshipPeriod.objects.all()
         if self.request.user.is_staff:
@@ -533,7 +533,7 @@ class PendingSponsorshipPeriodListView(
         :raises: Http404
         """
         if self.queryset is None:
-            self.project_slug = self.kwargs.get('project_slug', None)
+            self.project_slug = 'qgis'
             if self.project_slug:
                 self.project = Project.objects.get(slug=self.project_slug)
                 queryset = SponsorshipPeriod.unapproved_objects.filter(

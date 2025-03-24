@@ -156,7 +156,7 @@ class SponsorListView(SponsorMixin, PaginationMixin, ListView):
         context = super(SponsorListView, self).get_context_data(**kwargs)
         context['num_sponsors'] = context['sponsors'].count()
         context['unapproved'] = False
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         context['project_slug'] = project_slug
         if project_slug:
             project = Project.objects.get(slug=project_slug)
@@ -180,7 +180,7 @@ class SponsorListView(SponsorMixin, PaginationMixin, ListView):
         :raises: Http404
         """
         if self.queryset is None:
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if project_slug:
                 project = Project.objects.get(slug=project_slug)
                 queryset = SponsorshipPeriod.approved_objects.filter(
@@ -213,7 +213,7 @@ class FutureSponsorListView(
         context = super(FutureSponsorListView, self).get_context_data(**kwargs)
         context['num_sponsors'] = context['sponsors'].count()
         context['unapproved'] = False
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         context['project_slug'] = project_slug
         if project_slug:
             project = Project.objects.get(slug=project_slug)
@@ -242,7 +242,7 @@ class FutureSponsorListView(
         :raises: Http404
         """
         if self.queryset is None:
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if project_slug:
                 project = Project.objects.get(slug=project_slug)
                 queryset = SponsorshipPeriod.approved_objects.filter(
@@ -267,7 +267,7 @@ class SponsorWorldMapView(SponsorMixin, ListView):
         :returns: Context data which will be passed to the template.
         :rtype: dict
         """
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         context = super(SponsorWorldMapView, self).get_context_data(**kwargs)
         if project_slug:
             context['project'] = Project.objects.get(slug=project_slug)
@@ -290,7 +290,7 @@ class SponsorWorldMapView(SponsorMixin, ListView):
         :raises: Http404
         """
         if self.queryset is None:
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if project_slug:
                 project = Project.objects.get(slug=project_slug)
                 queryset = SponsorshipPeriod.objects.filter(project=project)
@@ -315,7 +315,7 @@ class SponsorDetailView(SponsorMixin, DetailView):
         :rtype: dict
         """
         context = super(SponsorDetailView, self).get_context_data(**kwargs)
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         slug = self.kwargs.get('slug', None)
         context['project_slug'] = project_slug
         context['slug'] = self.kwargs.get('slug', None)
@@ -349,7 +349,7 @@ class SponsorDetailView(SponsorMixin, DetailView):
         """
         if queryset is None:
             slug = self.kwargs.get('slug', None)
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if slug and project_slug:
                 project = Project.objects.get(slug=project_slug)
                 try:
@@ -384,7 +384,7 @@ class SponsorDeleteView(LoginRequiredMixin, DeleteView):
         :returns: Unaltered request object
         :rtype: HttpResponse
         """
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         return super(SponsorDeleteView, self).get(request, *args, **kwargs)
 
@@ -403,7 +403,7 @@ class SponsorDeleteView(LoginRequiredMixin, DeleteView):
         :returns: Unaltered request object
         :rtype: HttpResponse
         """
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         return super(SponsorDeleteView, self).post(request, *args, **kwargs)
 
@@ -495,7 +495,7 @@ class SponsorCreateView(LoginRequiredMixin, SponsorMixin, CreateView):
         :rtype: dict
         """
         kwargs = super(SponsorCreateView, self).get_form_kwargs()
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         kwargs.update({
             'user': self.request.user,
@@ -517,7 +517,7 @@ class SponsorUpdateView(LoginRequiredMixin, SponsorMixin, UpdateView):
         :rtype: dict
         """
         kwargs = super(SponsorUpdateView, self).get_form_kwargs()
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         kwargs.update({
             'user': self.request.user,
@@ -547,7 +547,7 @@ class SponsorUpdateView(LoginRequiredMixin, SponsorMixin, UpdateView):
         projects which user created (staff gets all projects)
         :rtype: QuerySet
         """
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         queryset = Sponsor.objects.all()
         if self.request.user.is_staff:
@@ -577,7 +577,7 @@ class SponsorUpdateView(LoginRequiredMixin, SponsorMixin, UpdateView):
         if queryset is None:
             queryset = self.get_queryset()
             slug = self.kwargs.get('slug', None)
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if slug and project_slug:
                 project = Project.objects.get(slug=project_slug)
                 try:
@@ -658,7 +658,7 @@ class PendingSponsorListView(
         :raises: Http404
         """
         if self.queryset is None:
-            self.project_slug = self.kwargs.get('project_slug', None)
+            self.project_slug = 'qgis'
             if self.project_slug:
                 self.project = Project.objects.get(slug=self.project_slug)
                 queryset = Sponsor.pending_objects.filter(
@@ -836,7 +836,7 @@ class GenerateSponsorPDFView(LoginRequiredMixin, SponsorMixin, TemplateView):
         """
         context = super(GenerateSponsorPDFView, self).\
             get_context_data(pagesize="A4", **kwargs)
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         sponsor_slug = self.kwargs.get('slug', None)
         sponsors = SponsorshipPeriod.approved_objects.all()
 
@@ -918,7 +918,7 @@ class RejectedSustainingMemberList(
         :raises: Http404
         """
         if self.queryset is None:
-            self.project_slug = self.kwargs.get('project_slug', None)
+            self.project_slug = 'qgis'
             if self.project_slug:
                 self.project = Project.objects.get(slug=self.project_slug)
                 queryset = Sponsor.objects.filter(

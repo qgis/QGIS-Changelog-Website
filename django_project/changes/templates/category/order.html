@@ -50,12 +50,16 @@
                 <div class="media-left">
                     {% if category.image_file %}
                         <a href="{{ category.image_file.url }}">
-                            <figure class="image is-50x50">
-                                <img class="is-rounded"
-                                     src="{% thumbnail category.image_file 50x50 crop %}" />
-                            </figure>
+                            {% thumbnail category.image_file "50x50" crop="center" as im %}
+                                <figure class="image is-50x50">
+                                    <img class="is-rounded"
+                                         src="{{ im.url }}"
+                                         width="{{ im.width }}"
+                                         height="{{ im.height }}" />
+                                </figure>
+                            {% endthumbnail %}
                         </a>
-                    {%  endif %}
+                    {% endif %}
                 </div>
                 <div class="media-content">
                     <p>

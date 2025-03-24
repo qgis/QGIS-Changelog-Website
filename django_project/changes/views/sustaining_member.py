@@ -165,7 +165,7 @@ class SustainingMembership(LoginRequiredMixin, DetailView):
         :rtype: dict
         """
         context = super(SustainingMembership, self).get_context_data(**kwargs)
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         context['project_slug'] = project_slug
         sustaining_member = self.get_object()
         today = date.today()
@@ -205,7 +205,7 @@ class SustainingMembership(LoginRequiredMixin, DetailView):
         """Return the a Sustaining Membership object.
         It must match with project_slug and the user"""
         try:
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             project = Project.objects.get(slug=project_slug)
             sustaining_member = get_object_or_404(
                 Sponsor,
@@ -258,7 +258,7 @@ class SustainingMemberUpdateView(LoginRequiredMixin, UpdateView):
         projects which user created (staff gets all projects)
         :rtype: QuerySet
         """
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         queryset = Sponsor.objects.all()
         if self.request.user.is_staff:
@@ -288,7 +288,7 @@ class SustainingMemberUpdateView(LoginRequiredMixin, UpdateView):
         if queryset is None:
             queryset = self.get_queryset()
             member_id = self.kwargs.get('member_id', None)
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if member_id and project_slug:
                 project = Project.objects.get(slug=project_slug)
                 obj = queryset.filter(
@@ -394,7 +394,7 @@ class SustainingMemberPeriodCreateView(
                 "(or use the dj-stripe webhooks)"
             )
 
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         project = Project.objects.get(slug=project_slug)
         member_id = self.kwargs.get('member_id', None)
         member = Sponsor.objects.get(id=member_id)
@@ -484,7 +484,7 @@ class SustainingMemberPeriodCreateView(
         :rtype: HttpResponseRedirect
         """
         member_id = self.kwargs.get('member_id', None)
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         source_id = self.request.POST.get('stripe-source-id')
         sponsor = Sponsor.objects.get(id=member_id)
         if not sponsor.approved:
@@ -582,7 +582,7 @@ class SustainingMemberPeriodUpdateView(
                 SustainingMemberPeriodUpdateView,
                 self).get_context_data(**kwargs)
 
-        project_slug = self.kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         project = Project.objects.get(slug=project_slug)
         member_id = self.kwargs.get('member_id', None)
         member = Sponsor.objects.get(id=member_id)
@@ -619,7 +619,7 @@ class SustainingMemberPeriodUpdateView(
         :rtype: QuerySet
         """
 
-        self.project_slug = self.kwargs.get('project_slug', None)
+        self.project_slug = 'qgis'
         self.project = Project.objects.get(slug=self.project_slug)
         qs = SponsorshipPeriod.objects.all()
         if self.request.user.is_staff:
@@ -648,7 +648,7 @@ class SustainingMemberPeriodUpdateView(
         if queryset is None:
             queryset = self.get_queryset()
             member_id = self.kwargs.get('member_id', None)
-            project_slug = self.kwargs.get('project_slug', None)
+            project_slug = 'qgis'
             if member_id and project_slug:
                 project = Project.objects.get(slug=project_slug)
                 obj = queryset.get(

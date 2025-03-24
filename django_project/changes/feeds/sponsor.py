@@ -35,7 +35,7 @@ class RssSponsorFeed(Feed):
         :raises: Http404
         """
         self.years_limit = request.GET.get('years_limit', '')
-        project_slug = kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         self.domain_path_url = request.build_absolute_uri(reverse('home'))
         return get_object_or_404(Project, slug=project_slug)
 
@@ -226,7 +226,7 @@ class JSONSponsorFeed(Feed):
         :raises: Http404
         """
         self.years_limit = request.GET.get('years_limit', '')
-        project_slug = kwargs.get('project_slug', None)
+        project_slug = 'qgis'
         self.domain_path_url = request.build_absolute_uri(reverse('home'))
         return get_object_or_404(Project, slug=project_slug)
 

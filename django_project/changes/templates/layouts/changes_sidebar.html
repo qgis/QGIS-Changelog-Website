@@ -34,6 +34,8 @@
     </li>
 
     {% if version %}
+    {% url 'version-detail' version.name as version_detail_url %}
+    {% if request.path == version_detail_url %}
       <li>
         <div class="has-child">
           <a onclick="toggleSubMenu('categories')">
@@ -56,6 +58,7 @@
             {% endfor %}
         </ul>
       </li>
+    {% endif %}
     {% endif %}
     </ul>
   </nav>
