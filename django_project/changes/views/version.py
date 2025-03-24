@@ -368,9 +368,7 @@ class VersionDeleteView(LoginRequiredMixin, DeleteView):
         :returns: URL
         :rtype: HttpResponse
         """
-        return reverse('version-list', kwargs={
-            'project_slug': self.object.project.slug
-        })
+        return reverse('version-list', kwargs={})
 
     def get_queryset(self):
         """Get the queryset for this view.

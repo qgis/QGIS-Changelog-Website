@@ -8,6 +8,7 @@ from crispy_forms.layout import (
     Fieldset,
     Submit,
     Field,
+    HTML,
 )
 from .models import (
     Category,
@@ -19,6 +20,8 @@ from .models import (
 )
 from changes.utils.svgimagefile import SVGAndImageFormField
 from crispy_bulma.widgets import FileUploadInput
+
+FileUploadInput.template_name = 'widgets/file_upload_input.html'
 
 class CategoryForm(forms.ModelForm):
 
@@ -50,12 +53,14 @@ class CategoryForm(forms.ModelForm):
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_class = 'box-content'
         super(CategoryForm, self).__init__(*args, **kwargs)
-        self.helper.add_input(
-            Submit(
-                'submit',
-                'Submit',
-                css_class='button is-success pt-2 mt-5'
+        self.helper.layout.append(
+            HTML(
+                '<button type="submit" class="button is-success mt-5" name="submit">'
+                '  <span class="icon"><i class="fas fa-check"></i></span>'
+                '  <span>Submit</span>'
+                '</button>'
             )
         )
 
@@ -112,20 +117,22 @@ class VersionForm(forms.ModelForm):
         layout = Layout(
             Fieldset(
                 form_title,
-                Field('name', css_class='form-control'),
-                Field('description', css_class='form-control'),
-                Field('image_file', css_class='form-control'),
-                Field('release_date', css_class='form-control'),
+                Field('name'),
+                Field('description'),
+                Field('image_file'),
+                Field('release_date'),
                 css_id='project-form')
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_class = 'box-content'
         super(VersionForm, self).__init__(*args, **kwargs)
-        self.helper.add_input(
-            Submit(
-                'submit',
-                'Submit',
-                css_class='button is-success pt-2 mt-5'
+        self.helper.layout.append(
+            HTML(
+                '<button type="submit" class="button is-success mt-5" name="submit">'
+                '  <span class="icon"><i class="fas fa-check"></i></span>'
+                '  <span>Submit</span>'
+                '</button>'
             )
         )
 
@@ -191,12 +198,14 @@ class EntryForm(forms.ModelForm):
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_class = 'box-content'
         super(EntryForm, self).__init__(*args, **kwargs)
-        self.helper.add_input(
-            Submit(
-                'submit',
-                'Submit',
-                css_class='button is-success pt-2 mt-5'
+        self.helper.layout.append(
+            HTML(
+                '<button type="submit" class="button is-success mt-5" name="submit">'
+                '  <span class="icon"><i class="fas fa-check"></i></span>'
+                '  <span>Submit</span>'
+                '</button>'
             )
         )
         self.fields['title'].label = 'Feature Title'
@@ -279,14 +288,16 @@ class SponsorForm(forms.ModelForm):
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_class = 'box-content'
         super(SponsorForm, self).__init__(*args, **kwargs)
         self.fields['project'].initial = self.project
         self.fields['project'].widget = forms.HiddenInput()
-        self.helper.add_input(
-            Submit(
-                'submit',
-                'Submit',
-                css_class='button is-success pt-2 mt-5'
+        self.helper.layout.append(
+            HTML(
+                '<button type="submit" class="button is-success mt-5" name="submit">'
+                '  <span class="icon"><i class="fas fa-check"></i></span>'
+                '  <span>Submit</span>'
+                '</button>'
             )
         )
 
@@ -337,12 +348,14 @@ class SponsorshipLevelForm(forms.ModelForm):
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_class = 'box-content'
         super(SponsorshipLevelForm, self).__init__(*args, **kwargs)
-        self.helper.add_input(
-            Submit(
-                'submit',
-                'Submit',
-                css_class='button is-success pt-2 mt-5'
+        self.helper.layout.append(
+            HTML(
+                '<button type="submit" class="button is-success mt-5" name="submit">'
+                '  <span class="icon"><i class="fas fa-check"></i></span>'
+                '  <span>Submit</span>'
+                '</button>'
             )
         )
 
@@ -398,6 +411,7 @@ class SponsorshipPeriodForm(forms.ModelForm):
         )
         self.helper.layout = layout
         self.helper.html5_required = False
+        self.helper.form_class = 'box-content'
         super(SponsorshipPeriodForm, self).__init__(*args, **kwargs)
         # Filter items to only show the approved items in the same project
         self.fields['sponsor'].queryset = \
@@ -406,11 +420,12 @@ class SponsorshipPeriodForm(forms.ModelForm):
         self.fields['sponsorship_level'].queryset = \
             SponsorshipLevel.objects.filter(
                 project=self.project, approved=True).order_by('name')
-        self.helper.add_input(
-            Submit(
-                'submit',
-                'Submit',
-                css_class='button is-success pt-2 mt-5'
+        self.helper.layout.append(
+            HTML(
+                '<button type="submit" class="button is-success mt-5" name="submit">'
+                '  <span class="icon"><i class="fas fa-check"></i></span>'
+                '  <span>Submit</span>'
+                '</button>'
             )
         )
 

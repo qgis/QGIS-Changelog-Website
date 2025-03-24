@@ -17,7 +17,7 @@ from django.views.generic import (
 from braces.views import LoginRequiredMixin
 from ..models import Version, Entry, Category
 from ..forms import EntryForm
-from lesson.utilities import re_order_features
+from common.utilities import re_order_features
 
 logger = logging.getLogger(__name__)
 

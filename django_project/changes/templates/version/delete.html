@@ -7,44 +7,51 @@
 {% endblock %}
 
 {% block page_title %}
-    <h1>Version Deleted</h1>
+    <h1 class="title">Version Deleted</h1>
 {% endblock page_title %}
 
 {% block content %}
     <form action="" id="delete-confirmation" method="post">{% csrf_token %}
-        <div class="alert row">
-            <div class="col-lg-10">
-                <p class="lead">Please confirm you wish to delete the version below!</p>
-            </div>
-            <div class="col-lg-2">
-                <div class="btn-group">
-                    <a class="btn btn-default btn-sm tooltip-toggle"
-                       href="#"
-                       onClick="$('#delete-confirmation').submit()"
-                       data-title="Confirm Delete {{ version.name }}">
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </a>
-                    <a class="btn btn-default btn-sm tooltip-toggle"
-                       href='{% url "version-list" %}'
-                       data-title="Cancel">
-                        <span class="glyphicon glyphicon-arrow-left"></span>
-                    </a>
+        <div class="notification is-warning is-light">
+            <div class="columns">
+                <div class="column is-10">
+                    <p class="is-size-5">Please confirm you wish to delete the version below!</p>
+                </div>
+                <div class="column is-2">
+                    <div class="buttons">
+                        <a class="button is-small is-danger"
+                           href="#"
+                           onClick="$('#delete-confirmation').submit()"
+                           title="Confirm Delete {{ version.name }}">
+                            <span class="icon is-small">
+                                <i class="fas fa-trash"></i>
+                            </span>
+                        </a>
+                        <a class="button is-small"
+                           href='{% url "version-list" %}'
+                           title="Cancel">
+                            <span class="icon is-small">
+                                <i class="fas fa-arrow-left"></i>
+                            </span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <h3><span class="text-muted">Version:</span> {{ version.name }}</h3>
+        <div class="columns">
+            <div class="column is-12">
+                <h3 class="subtitle"><span class="has-text-grey">Version:</span> {{ version.name }}</h3>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-8">
+        <div class="columns">
+            <div class="column is-8">
                 {{ version.description|base_markdown }}
             </div>
-            <div class="col-lg-4">
+            <div class="column is-4">
                 {% if version.image_file %}
-                    <img class="img-responsive img-rounded"
-                         src="{{ version.image_file.url }}" />
+                    <figure class="image">
+                        <img src="{{ version.image_file.url }}" />
+                    </figure>
                 {%  endif %}
             </div>
         </div>
