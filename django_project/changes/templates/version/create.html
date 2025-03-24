@@ -12,4 +12,14 @@
         {% crispy form %}
     </div>
 </section>
+
+<script>
+    $(function() {
+        new AirDatepicker('#id_release_date', {
+            dateFormat: 'yyyy-MM-dd',
+            locale: localeEn['default'],
+            autoClose: true,
+        });
+    });
+</script>
 {% endblock %}

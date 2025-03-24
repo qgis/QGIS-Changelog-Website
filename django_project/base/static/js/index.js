@@ -4,6 +4,9 @@ import 'datatables.net';
 import 'datatables.net-dt';
 import 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'air-datepicker';
+import 'air-datepicker/air-datepicker.css';
+import 'air-datepicker/locale/en';
 
 document.addEventListener("DOMContentLoaded", () => {
   // Get all "navbar-burger" elements

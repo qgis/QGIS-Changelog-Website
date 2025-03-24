@@ -68,6 +68,22 @@ module.exports = {
           exposes: ['Leaflet'],
         },
       },
+      // Expose AirDatepicker globally
+      {
+        test: require.resolve('air-datepicker'),
+        loader: 'expose-loader',
+        options: {
+          exposes: ['AirDatepicker'],
+        },
+      },
+      // Expose localeEn globally
+      {
+        test: require.resolve('air-datepicker/locale/en'),
+        loader: 'expose-loader',
+        options: {
+          exposes: ['localeEn'],
+        },
+      },
       // CSS and SCSS rules
       {
         test: /\.css$/,
