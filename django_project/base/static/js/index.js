@@ -7,6 +7,8 @@ import 'leaflet/dist/leaflet.css';
 import 'air-datepicker';
 import 'air-datepicker/air-datepicker.css';
 import 'air-datepicker/locale/en';
+import 'jquery-ui/ui/widgets/sortable';
+import 'jquery-ui/themes/base/sortable.css';
 
 document.addEventListener("DOMContentLoaded", () => {
   // Get all "navbar-burger" elements
