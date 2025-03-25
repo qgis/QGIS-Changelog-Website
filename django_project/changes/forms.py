@@ -154,7 +154,7 @@ class VersionForm(forms.ModelForm):
 class EntryForm(forms.ModelForm):
 
     # noinspection PyClassicStyleClass
-    image_file = forms.ImageField(widget=FileUploadInput)
+    image_file = forms.ImageField(widget=FileUploadInput, required=False)
     class Meta:
         model = Entry
         fields = (
