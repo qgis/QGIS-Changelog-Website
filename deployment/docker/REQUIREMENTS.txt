@@ -11,7 +11,7 @@ git+https://github.com/Xpirix/dj-stripe.git@django4_update
 django-allauth~=0.63
 django-braces~=1.17
 # disqus
-django-disqus~=0.5
+# django-disqus~=0.5
 django-colorfield~=0.11
 django-countries~=7.6
 django-crispy-forms~=2.1
