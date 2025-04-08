@@ -67,9 +67,7 @@ class TestCategoryViews(TestCase):
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_CategoryListView(self):
 
-        response = self.client.get(reverse('category-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('category-list'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -78,7 +76,7 @@ class TestCategoryViews(TestCase):
         status = self.client.login(username='timlinux', password='password')
         self.assertTrue(status)
         url = reverse(
-            'category-create', kwargs={'project_slug': self.project.slug})
+            'category-create')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         expected_templates = [
@@ -89,9 +87,7 @@ class TestCategoryViews(TestCase):
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_CategoryCreateView_no_login(self):
 
-        response = self.client.get(reverse('category-create', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('category-create'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -103,14 +99,11 @@ class TestCategoryViews(TestCase):
             'project': self.project.id,
             'sort_number': 0
         }
-        response = self.client.post(reverse('category-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
+        response = self.client.post(reverse('category-create'), post_data)
         self.assertRedirects(
             response,
             reverse(
-                'category-list',
-                kwargs={'project_slug': self.project.slug}))
+                'category-list'))
 
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_CategoryCreate_no_login(self):
@@ -118,17 +111,14 @@ class TestCategoryViews(TestCase):
         post_data = {
             'name': u'New Test Category'
         }
-        response = self.client.post(reverse('category-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
+        response = self.client.post(reverse('category-create'), post_data)
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_CategoryDetailView(self):
 
         response = self.client.get(reverse('category-detail', kwargs={
-            'slug': self.category.slug,
-            'project_slug': self.category.project.slug
+            'slug': self.category.slug
         }))
         self.assertEqual(response.status_code, 200)
         expected_templates = [
@@ -141,8 +131,7 @@ class TestCategoryViews(TestCase):
 
         self.client.login(username='timlinux', password='password')
         response = self.client.get(reverse('category-delete', kwargs={
-            'slug': self.category.slug,
-            'project_slug': self.category.project.slug
+            'slug': self.category.slug
         }))
         self.assertEqual(response.status_code, 200)
         expected_templates = [
@@ -154,8 +143,7 @@ class TestCategoryViews(TestCase):
     def test_CategoryDeleteView_no_login(self):
 
         response = self.client.get(reverse('category-delete', kwargs={
-            'slug': self.category.slug,
-            'project_slug': self.category.project.slug
+            'slug': self.category.slug
         }))
         self.assertEqual(response.status_code, 302)
 
@@ -165,12 +153,9 @@ class TestCategoryViews(TestCase):
         category_to_delete = CategoryF.create(project=self.project)
         self.client.login(username='timlinux', password='password')
         response = self.client.post(reverse('category-delete', kwargs={
-            'slug': category_to_delete.slug,
-            'project_slug': category_to_delete.project.slug
+            'slug': category_to_delete.slug
         }), {})
-        self.assertRedirects(response, reverse('category-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        self.assertRedirects(response, reverse('category-list'))
         # TODO: The following line to test that
         # the object is deleted does not currently pass as expected.
         # self.assertTrue(category_to_delete.pk is None)
@@ -180,8 +165,7 @@ class TestCategoryViews(TestCase):
 
         category_to_delete = CategoryF.create()
         response = self.client.post(reverse('category-delete', kwargs={
-            'slug': category_to_delete.slug,
-            'project_slug': self.category.project.slug
+            'slug': category_to_delete.slug
         }))
         self.assertEqual(response.status_code, 302)
 
@@ -195,9 +179,7 @@ class TestCategoryViews(TestCase):
         self.client.login(
             username='dimas',
             password='password')
-        response = self.client.get(reverse('category-order', kwargs={
-            'project_slug': self.category.project.slug
-        }))
+        response = self.client.get(reverse('category-order'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -205,9 +187,7 @@ class TestCategoryViews(TestCase):
         self.client.login(
             username='timlinux',
             password='password')
-        response = self.client.get(reverse('category-order', kwargs={
-            'project_slug': self.category.project.slug
-        }))
+        response = self.client.get(reverse('category-order'))
         self.assertEqual(response.status_code, 200)
         expected_templates = [
             'category/order.html', u'changes/entry_list.html'
@@ -217,9 +197,7 @@ class TestCategoryViews(TestCase):
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_CategoryOrderView_no_login(self):
 
-        response = self.client.get(reverse('category-order', kwargs={
-            'project_slug': self.category.project.slug
-        }))
+        response = self.client.get(reverse('category-order'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -235,9 +213,7 @@ class TestCategoryViews(TestCase):
             'sort_number': '0'
         }]
 
-        response = self.client.post(reverse('category-submit-order', kwargs={
-            'project_slug': self.project.slug
-        }), json.dumps(post_data), content_type='application/json')
+        response = self.client.post(reverse('category-submit-order'), json.dumps(post_data), content_type='application/json')
 
         self.assertEqual(response.status_code, 200)
 
@@ -253,9 +229,7 @@ class TestCategoryViews(TestCase):
             'sort_number': '0'
         }]
 
-        response = self.client.post(reverse('category-submit-order', kwargs={
-            'project_slug': self.project.slug
-        }), json.dumps(post_data), content_type='application/json')
+        response = self.client.post(reverse('category-submit-order'), json.dumps(post_data), content_type='application/json')
 
         self.assertEqual(response.status_code, 302)
 
@@ -325,7 +299,6 @@ class TestEntryViews(TestCase):
 
         self.client.login(username='timlinux', password='password')
         response = self.client.get(reverse('entry-create', kwargs={
-            'project_slug': self.project.slug,
             'version_slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 200)
@@ -338,7 +311,6 @@ class TestEntryViews(TestCase):
     def test_EntryCreateView_no_login(self):
 
         response = self.client.get(reverse('entry-create', kwargs={
-            'project_slug': self.project.slug,
             'version_slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 302)
@@ -354,7 +326,6 @@ class TestEntryViews(TestCase):
             'author': self.user.id
         }
         response = self.client.post(reverse('entry-create', kwargs={
-            'project_slug': self.project.slug,
             'version_slug': self.version.slug
         }), post_data)
         self.assertRedirects(
@@ -362,7 +333,6 @@ class TestEntryViews(TestCase):
             reverse(
                 'version-detail',
                 kwargs={
-                    'project_slug': self.project.slug,
                     'slug': self.version.slug}))
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -374,7 +344,6 @@ class TestEntryViews(TestCase):
             'category': self.category.id
         }
         response = self.client.post(reverse('entry-create', kwargs={
-            'project_slug': self.project.slug,
             'version_slug': self.version.slug
         }), post_data)
         self.assertEqual(response.status_code, 302)
@@ -418,7 +387,6 @@ class TestEntryViews(TestCase):
             reverse(
                 'version-detail',
                 kwargs={
-                    'project_slug': self.project.slug,
                     'slug': self.version.slug}))
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -479,7 +447,6 @@ class TestEntryViews(TestCase):
             'pk': entry_to_delete.id
         }), {})
         self.assertRedirects(response, reverse('version-detail', kwargs={
-            'project_slug': self.project.slug,
             'slug': self.version.slug
         }))
         # TODO: The following line to test that the object is deleted does not
@@ -555,9 +522,7 @@ class TestVersionViews(TestCase):
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_VersionListView(self):
 
-        response = self.client.get(reverse('version-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-list'))
         self.assertEqual(response.status_code, 200)
         expected_templates = [
             'version/list.html', u'changes/version_list.html'
@@ -570,9 +535,7 @@ class TestVersionViews(TestCase):
     def test_VersionCreateView_with_login(self):
 
         self.client.login(username='timlinux', password='password')
-        response = self.client.get(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-create'))
         self.assertEqual(response.status_code, 200)
         expected_templates = [
             'version/create.html'
@@ -582,9 +545,7 @@ class TestVersionViews(TestCase):
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_VersionCreateView_no_login(self):
 
-        response = self.client.get(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-create'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -597,12 +558,9 @@ class TestVersionViews(TestCase):
             'description': u'This is a test description',
             'author': self.user.id
         }
-        response = self.client.post(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
+        response = self.client.post(reverse('version-create'), post_data)
         self.assertRedirects(
-            response, reverse('version-list', kwargs={
-                'project_slug': self.project.slug})
+            response, reverse('version-list')
         )
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -613,9 +571,7 @@ class TestVersionViews(TestCase):
             'name': u'New Test Version',
             'description': u'This is a test description'
         }
-        response = self.client.post(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
+        response = self.client.post(reverse('version-create'), post_data)
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
@@ -623,7 +579,6 @@ class TestVersionViews(TestCase):
 
         self.client.login(username='timlinux', password='password')
         response = self.client.get(reverse('version-update', kwargs={
-            'project_slug': self.version.project.slug,
             'slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 200)
@@ -636,7 +591,6 @@ class TestVersionViews(TestCase):
     def test_VersionUpdateView_no_login(self):
 
         response = self.client.get(reverse('version-update', kwargs={
-            'project_slug': self.version.project.slug,
             'slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 302)
@@ -652,12 +606,9 @@ class TestVersionViews(TestCase):
             'author': self.user.id
         }
         response = self.client.post(reverse('version-update', kwargs={
-            'project_slug': self.version.project.slug,
             'slug': self.version.slug
         }), post_data)
-        self.assertRedirects(response, reverse('version-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        self.assertRedirects(response, reverse('version-list'))
 
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_VersionUpdate_no_login(self):
@@ -668,7 +619,6 @@ class TestVersionViews(TestCase):
             'description': u'This is a test description'
         }
         response = self.client.post(reverse('version-update', kwargs={
-            'project_slug': self.version.project.slug,
             'slug': self.version.slug
         }), post_data)
         self.assertEqual(response.status_code, 302)
@@ -677,8 +627,7 @@ class TestVersionViews(TestCase):
     def test_VersionDetailView(self):
 
         response = self.client.get(reverse('version-detail', kwargs={
-            'slug': self.version.slug,
-            'project_slug': self.project.slug
+            'slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 200)
         expected_templates = [
@@ -691,8 +640,7 @@ class TestVersionViews(TestCase):
 
         self.client.login(username='timlinux', password='password')
         response = self.client.get(reverse('version-delete', kwargs={
-            'slug': self.version.slug,
-            'project_slug': self.project.slug
+            'slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 200)
         expected_templates = [
@@ -704,8 +652,7 @@ class TestVersionViews(TestCase):
     def test_VersionDeleteView_no_login(self):
 
         response = self.client.get(reverse('version-delete', kwargs={
-            'slug': self.version.slug,
-            'project_slug': self.version.project.slug
+            'slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 302)
 
@@ -720,12 +667,9 @@ class TestVersionViews(TestCase):
         }
         self.client.login(username='timlinux', password='password')
         response = self.client.post(reverse('version-delete', kwargs={
-            'slug': version_to_delete.slug,
-            'project_slug': version_to_delete.project.slug
+            'slug': version_to_delete.slug
         }), post_data)
-        self.assertRedirects(response, reverse('version-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        self.assertRedirects(response, reverse('version-list'))
         # TODO: The following line to test that the object is deleted does
         # not currently pass as expected.
         # self.assertTrue(version_to_delete.pk is None)
@@ -737,8 +681,7 @@ class TestVersionViews(TestCase):
                 project=self.project,
                 name='2.0.1')
         response = self.client.post(reverse('version-delete', kwargs={
-            'slug': version_to_delete.slug,
-            'project_slug': self.version.project.slug
+            'slug': version_to_delete.slug
         }))
         self.assertEqual(response.status_code, 302)
 
@@ -750,8 +693,7 @@ class TestVersionViews(TestCase):
             name='1.0.1'
         )
         response = self.client.get(reverse('version-download', kwargs={
-            'slug': version_same_name_from_other_project.slug,
-            'project_slug': other_project.slug
+            'slug': version_same_name_from_other_project.slug
         }))
         self.assertEqual(response.status_code, 302)
 
@@ -765,8 +707,7 @@ class TestVersionViews(TestCase):
             name='1.0.1'
         )
         response = self.client.get(reverse('version-download', kwargs={
-            'slug': version_same_name_from_other_project.slug,
-            'project_slug': other_project.slug
+            'slug': version_same_name_from_other_project.slug
         }))
         self.assertEqual(
             response.context.get('version'),
@@ -782,8 +723,7 @@ class TestVersionViews(TestCase):
             name='1.0.1'
         )
         response = self.client.get(reverse('version-download-md', kwargs={
-            'slug': version_same_name_from_other_project.slug,
-            'project_slug': other_project.slug
+            'slug': version_same_name_from_other_project.slug
         }))
         self.assertEqual(
             response.context.get('version'),
@@ -795,13 +735,11 @@ class TestVersionViews(TestCase):
     def test_VersionDownload_login_notfound(self, mocked_convert):
         self.client.login(username='timlinux', password='password')
         response = self.client.get(reverse('version-download', kwargs={
-            'slug': 'not-found',
-            'project_slug': self.project.slug
+            'slug': 'not-found'
         }))
         self.assertEqual(response.status_code, 404)
         response = self.client.get(reverse('version-download', kwargs={
-            'slug': 'not-found',
-            'project_slug': None
+            'slug': 'not-found'
         }))
         self.assertEqual(response.status_code, 404)
 
@@ -810,8 +748,7 @@ class TestVersionViews(TestCase):
         self.client.login(username='timlinux', password='password')
         response = self.client.get(
             reverse('download-referenced-images', kwargs={
-                'slug': self.version.slug,
-                'project_slug': self.project.slug
+                'slug': self.version.slug
             }))
         self.assertEqual(response.status_code, 200)
 
@@ -859,9 +796,7 @@ class TestVersionViewsWithAnonymousUserForCRUD(TestCase):
         """
         Test if anonymous user can view version entry list.
         """
-        response = self.client.get(reverse('version-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-list'))
 
         expected_templates = [
             'version/list.html', u'changes/version_list.html'
@@ -876,9 +811,7 @@ class TestVersionViewsWithAnonymousUserForCRUD(TestCase):
         """
         Test if anonymous user can create a version entry.
         """
-        response = self.client.get(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-create'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver'])
@@ -886,9 +819,7 @@ class TestVersionViewsWithAnonymousUserForCRUD(TestCase):
         """
         Test if anonymous user can update a version entry.
         """
-        response = self.client.get(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-create'))
         self.assertEqual(response.status_code, 302)
 
     @override_settings(VALID_DOMAIN=['testserver'])
@@ -897,8 +828,7 @@ class TestVersionViewsWithAnonymousUserForCRUD(TestCase):
         Test if anonymous user can delete a version entry.
         """
         response = self.client.get(reverse('version-delete', kwargs={
-            'slug': self.version.slug,
-            'project_slug': self.version.project.slug
+            'slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 302)
 
@@ -960,9 +890,7 @@ class TestVersionViewsWithNormalUserForCRUD(TestCase):
         Test if a normal user can view a list of version entries.
         """
         self.client.login(username='sonlinux', password='password')
-        response = self.client.get(reverse('version-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-list'))
 
         expected_templates = [
             'version/list.html', u'changes/version_list.html'
@@ -979,9 +907,7 @@ class TestVersionViewsWithNormalUserForCRUD(TestCase):
         Test if a normal user can create a list of version entries.
         """
         self.client.login(username='sonlinux', password='password')
-        response = self.client.get(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-create'))
 
         self.assertEqual(response.status_code, 200)
 
@@ -994,8 +920,7 @@ class TestVersionViewsWithNormalUserForCRUD(TestCase):
 
         # lets ensure the user updating owns the project.
         response = self.client.get(reverse('category-delete', kwargs={
-            'slug': self.category.slug,
-            'project_slug': self.category.project.slug
+            'slug': self.category.slug
         }))
 
         self.assertEqual(response.status_code, 200)
@@ -1013,8 +938,7 @@ class TestVersionViewsWithNormalUserForCRUD(TestCase):
         self.client.login(username='sonlinux', password='password')
 
         response = self.client.get(reverse('category-delete', kwargs={
-            'slug': self.category.slug,
-            'project_slug': self.category.project.slug
+            'slug': self.category.slug
         }))
 
         self.assertEqual(response.status_code, 200)
@@ -1080,9 +1004,7 @@ class TestVersionViewsWithStaffUserForCRUD(TestCase):
         """
         Test if staff user can view a list of version entries.
         """
-        response = self.client.get(reverse('version-list', kwargs={
-            'project_slug': self.project.slug
-        }))
+        response = self.client.get(reverse('version-list'))
         self.assertEqual(response.status_code, 200)
 
         expected_template = [
@@ -1105,9 +1027,7 @@ class TestVersionViewsWithStaffUserForCRUD(TestCase):
             'author': self.user.id
         }
 
-        response = self.client.get(reverse('version-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
+        response = self.client.get(reverse('version-create'), post_data)
 
         self.assertEqual(response.status_code, 200)
 
@@ -1124,7 +1044,6 @@ class TestVersionViewsWithStaffUserForCRUD(TestCase):
         self.client.login(username='sonlinux', password='password')
 
         response = self.client.get(reverse('version-update', kwargs={
-            'project_slug': self.version.project.slug,
             'slug': self.version.slug
         }))
         self.assertEqual(response.status_code, 200)
@@ -1142,8 +1061,7 @@ class TestVersionViewsWithStaffUserForCRUD(TestCase):
         self.client.login(username='sonlinux', password='password')
 
         response = self.client.get(reverse('category-delete', kwargs={
-            'slug': self.category.slug,
-            'project_slug': self.category.project.slug
+            'slug': self.category.slug
         }))
 
         self.assertEqual(response.status_code, 200)
@@ -1152,616 +1070,3 @@ class TestVersionViewsWithStaffUserForCRUD(TestCase):
         ]
 
         self.assertEqual(response.template_name, expected_templates)
-
-
-class TestSponsorshipLevelViews(TestCase):
-    """
-    Tests that SponsorshipLevel views work.
-    """
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def setUp(self):
-        """
-        Setup before each test
-        We force the locale to en otherwise it will use
-        the locale of the host running the tests and we
-        will get unpredictable results / 404s
-        """
-
-        self.client = Client()
-        self.client.post(
-                '/set_language/', data={'language': 'en'})
-        logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create()
-        self.sponsorship_level = SponsorshipLevelF.create(project=self.project)
-        self.user = UserF.create(**{
-            'username': 'timlinux',
-            'password': 'password',
-            'is_staff': True
-        })
-        # Something changed in the way factoryboy works with django 1.8
-        # I think - we need to explicitly set the users password
-        # because the core.model_factories.UserF._prepare method
-        # which sets the password is never called. Next two lines are
-        # a work around for that - sett #581
-        self.user.set_password('password')
-        self.user.save()
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def tearDown(self):
-        """
-        Teardown after each test.
-
-        :return:
-        """
-        self.project.delete()
-        self.sponsorship_level.delete()
-        self.user.delete()
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelListView(self):
-
-        response = self.client.get(reverse('sponsorshiplevel-list', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsorship_level/list.html',
-            u'changes/sponsorshiplevel_list.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-        self.assertEqual(response.context_data['object_list'][0],
-                         self.sponsorship_level)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelCreateView_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        response = self.client.get(reverse('sponsorshiplevel-create', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsorship_level/create.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelCreateView_no_login(self):
-
-        response = self.client.get(reverse('sponsorshiplevel-create', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelCreate_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        post_data = {
-            'name': u'New Test Sponsorship Level',
-            'project': self.project.id,
-            'sort_number': 0
-        }
-        response = self.client.post(reverse('sponsorshiplevel-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelCreate_no_login(self):
-
-        post_data = {
-            'name': u'New Test Sponsorship Level'
-        }
-        response = self.client.post(reverse('sponsorshiplevel-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelDetailView(self):
-
-        response = self.client.get(reverse('sponsorshiplevel-detail', kwargs={
-            'slug': self.sponsorship_level.slug,
-            'project_slug': self.sponsorship_level.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsorship_level/detail.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelDeleteView_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        response = self.client.get(reverse('sponsorshiplevel-delete', kwargs={
-            'slug': self.sponsorship_level.slug,
-            'project_slug': self.sponsorship_level.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsorship_level/delete.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelDeleteView_no_login(self):
-
-        response = self.client.get(reverse('sponsorshiplevel-delete', kwargs={
-            'slug': self.sponsorship_level.slug,
-            'project_slug': self.sponsorship_level.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelDelete_with_login(self):
-
-        sponsorship_level_to_delete = SponsorshipLevelF.create(
-                project=self.project)
-        self.client.login(username='timlinux', password='password')
-        response = self.client.post(reverse('sponsorshiplevel-delete', kwargs={
-            'slug': sponsorship_level_to_delete.slug,
-            'project_slug': sponsorship_level_to_delete.project.slug
-        }), {})
-        self.assertRedirects(
-            response, reverse('sponsorshiplevel-list', kwargs={
-                'project_slug': self.project.slug}))
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipLevelDelete_no_login(self):
-
-        sponsorshiplevel_to_delete = SponsorshipLevelF.create()
-        response = self.client.post(reverse('sponsorshiplevel-delete', kwargs={
-            'slug': sponsorshiplevel_to_delete.slug,
-            'project_slug': self.sponsorship_level.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-
-class TestSponsorViews(TestCase):
-    """Tests that Sponsor views work."""
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def setUp(self):
-        """
-        Setup before each test
-        We force the locale to en otherwise it will use
-        the locale of the host running the tests and we
-        will get unpredictable results / 404s
-        """
-
-        self.client = Client()
-        self.client.post(
-                '/set_language/', data={'language': 'en'})
-        logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create()
-        self.sponsor = SponsorF.create(project=self.project)
-        self.current_sponsor = SponsorF.create(project=self.project)
-        self.future_sponsor = SponsorF.create(project=self.project)
-        self.user = UserF.create(**{
-            'username': 'timlinux',
-            'password': 'password',
-            'is_staff': True
-        })
-        # Something changed in the way factoryboy works with django 1.8
-        # I think - we need to explicitly set the users password
-        # because the core.model_factories.UserF._prepare method
-        # which sets the password is never called. Next two lines are
-        # a work around for that - sett #581
-        self.user.set_password('password')
-        self.user.save()
-
-        self.non_staff_user = UserF.create(**{
-            'username': 'non-staff',
-            'password': 'password',
-            'is_staff': False
-        })
-        self.non_staff_user.set_password('password')
-        self.non_staff_user.save()
-
-        self.sponsorship_level = SponsorshipLevelF.create(
-            project=self.project,
-            name='Gold')
-        self.today = datetime.date.today()
-        self.past_sponsorship_period = SponsorshipPeriodF.create(
-            project=self.project,
-            sponsor=self.sponsor,
-            sponsorship_level=self.sponsorship_level,
-            start_date=self.today - timedelta(days=200),
-            end_date=self.today - timedelta(days=100),
-            approved=True)
-        self.current_sponsorship_period = SponsorshipPeriodF.create(
-            project=self.project,
-            sponsor=self.current_sponsor,
-            sponsorship_level=self.sponsorship_level,
-            start_date=self.today,
-            end_date=self.today + timedelta(days=700),
-            approved=True)
-        self.future_sponsorship_period = SponsorshipPeriodF.create(
-            project=self.project,
-            sponsor=self.future_sponsor,
-            sponsorship_level=self.sponsorship_level,
-            start_date=self.today + timedelta(days=200),
-            end_date=self.today + timedelta(days=700),
-            approved=True)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def tearDown(self):
-        """
-        Teardown after each test.
-
-        :return:
-        """
-        self.project.delete()
-        self.sponsor.delete()
-        self.user.delete()
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorListView(self):
-
-        response = self.client.get(reverse('sponsor-list', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_FutureSponsorListView_no_login(self):
-        response = self.client.get(reverse('future-sponsor-list', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_FutureSponsorListView_with_staff_login(self):
-        self.client.login(username='timlinux', password='password')
-        response = self.client.get(reverse('future-sponsor-list', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_FutureSponsorListView_with_non_staff_login(self):
-        self.client.login(username='non-staff', password='password')
-        response = self.client.get(reverse('future-sponsor-list', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 404)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorWorldMapView(self):
-
-        response = self.client.get(reverse('sponsor-world-map', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsor/world-map.html',
-            u'changes/sponsorshipperiod_list.html'
-        ]
-        self.assertEqual(expected_templates, response.template_name)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorCreateView_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        response = self.client.get(reverse('sponsor-create', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsor/create.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorCreateView_no_login(self):
-
-        response = self.client.get(reverse('sponsor-create', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorCreate_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        post_data = {
-            'name': u'New Test Sponsor',
-            'project': self.project.id,
-            'sort_number': 0
-        }
-        response = self.client.post(reverse('sponsor-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorCreate_no_login(self):
-
-        post_data = {
-            'name': u'New Test Sponsor'
-        }
-        response = self.client.post(reverse('sponsor-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorCreate_with_svg_logo(self):
-        svg = ('<?xml version="1.0" standalone="no"?>'
-               '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"'
-               '"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">'
-               '<svg version="1.0" xmlns="http://www.w3.org/2000/svg"'
-               'width="32.000000pt" height="32.000000pt" viewBox="0 0 '
-               '32.000000 32.000000"'
-               'preserveAspectRatio="xMidYMid meet"' >
-               ''
-               '<g transform="translate(0.000000,32.000000) '
-               'scale(0.100000,-0.100000)"'
-               'fill="#000000" stroke="none">'
-               '<path d="M95 291 c-41 -18 -77 -68 -82 -113 -10 '
-               '-99 84 -178 183 -154 25 7 26'
-               '8 9 26 -11 12 -31 20 -50 20 -47 0 -85 41 -85 92 '
-               '0 51 43 98 90 98 44 0 90'
-               '-47 90 -93 0 -34 33 -78 48 -63 4 4 7 32 7 62 0 49'
-               ' -3 57 -37 91 -33 33 -43'
-               '37 -95 40 -32 1 -67 -1 -78 -6z"/>'
-               '<path d="M140 156 c0 -13 7 -29 15 -36 13 -10 15 -9 '
-               '15 9 0 13 6 21 16 21 14'
-               '0 14 3 4 15 -20 24 -50 19 -50 -9z"/>'
-               '<path d="M190 107 c0 -32 59 -87 93 -87 39 0 35 25 -12 '
-               '71 -44 45 -81 52 -81'
-               '16z"/>'
-               '</g>'
-               '</svg>')
-        logo = SimpleUploadedFile('qgis.svg', svg)
-        self.client.login(username='timlinux', password='password')
-        post_data = {
-            'name': u'New Test Sponsor',
-            'project': self.project.id,
-            'sort_number': 0,
-            'logo': logo
-        }
-        response = self.client.post(reverse('sponsor-create', kwargs={
-            'project_slug': self.project.slug
-        }), post_data)
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorDeleteView_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        response = self.client.get(reverse('sponsor-delete', kwargs={
-            'slug': self.sponsor.slug,
-            'project_slug': self.sponsor.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsor/delete.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorDeleteView_no_login(self):
-
-        response = self.client.get(reverse('sponsor-delete', kwargs={
-            'slug': self.sponsor.slug,
-            'project_slug': self.sponsor.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorDelete_with_login(self):
-
-        sponsor_to_delete = SponsorF.create(project=self.project)
-        self.client.login(username='timlinux', password='password')
-        response = self.client.post(reverse('sponsor-delete', kwargs={
-            'slug': sponsor_to_delete.slug,
-            'project_slug': sponsor_to_delete.project.slug
-        }), {})
-        self.assertRedirects(response, reverse('sponsor-list', kwargs={
-            'project_slug': self.project.slug
-        }))
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorDelete_no_login(self):
-
-        sponsor_to_delete = SponsorF.create()
-        response = self.client.post(reverse('sponsor-delete', kwargs={
-            'slug': sponsor_to_delete.slug,
-            'project_slug': self.sponsor.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-
-class TestSponsorshipPeriodViews(TestCase):
-    """Tests that SponsorshipPeriod views work."""
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def setUp(self):
-        """
-        Setup before each test
-
-        We force the locale to en otherwise it will use
-        the locale of the host running the tests and we
-        will get unpredictable results / 404s
-        """
-
-        self.client = Client()
-        self.client.post(
-                '/set_language/', data={'language': 'en'})
-        logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create(
-                name='testproject')
-        self.sponsor = SponsorF.create(
-                project=self.project,
-                name='Kartoza')
-        self.sponsorship_level = SponsorshipLevelF.create(
-                project=self.project,
-                name='Gold')
-        self.sponsorship_period = SponsorshipPeriodF.create(
-            sponsor=self.sponsor,
-            sponsorship_level=self.sponsorship_level,
-            approved=True)
-        self.user = UserF.create(**{
-            'username': 'timlinux',
-            'password': 'password',
-            'is_staff': True
-        })
-        # Something changed in the way factoryboy works with django 1.8
-        # I think - we need to explicitly set the users password
-        # because the core.model_factories.UserF._prepare method
-        # which sets the password is never called. Next two lines are
-        # a work around for that - sett #581
-        self.user.set_password('password')
-        self.user.save()
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def tearDown(self):
-        """
-        Teardown after each test.
-
-        :return:
-        """
-        self.project.delete()
-        self.sponsor.delete()
-        self.sponsorship_level.delete()
-        self.sponsorship_period.delete()
-        self.user.delete()
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodListView(self):
-        """Test SponsorshipPeriod list view."""
-        response = self.client.get(reverse('sponsorshipperiod-list', kwargs={
-            'project_slug': self.project.slug,
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsorship_period/list.html',
-            u'changes/sponsorshipperiod_list.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodCreateView_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        response = self.client.get(reverse('sponsorshipperiod-create', kwargs={
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsorship_period/create.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodCreateView_no_login(self):
-
-        response = self.client.get(reverse('sponsorshipperiod-create', kwargs={
-            'project_slug': self.project.slug,
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodCreate_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        post_data = {
-            'sponsor': self.sponsor.id,
-            'sponsorshiplevel': self.sponsorship_level.id,
-            'author': self.user.id
-        }
-        response = self.client.post(
-            reverse(
-                'sponsorshipperiod-create', kwargs={
-                    'project_slug': self.project.slug}), post_data)
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodCreate_no_login(self):
-
-        post_data = {
-            'sponsor': self.sponsor.id,
-            'sponsorship_level': self.sponsorship_level.id
-        }
-        response = self.client.post(
-            reverse('sponsorshipperiod-create', kwargs={
-                'project_slug': self.project.slug
-            }), post_data)
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodUpdateView_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        response = self.client.get(
-            reverse('sponsorshipperiod-update', kwargs={
-                'slug': self.sponsorship_period.slug,
-                'project_slug': self.project.slug
-            }))
-        self.assertEqual(response.status_code, 200)
-        expected_templates = [
-            'sponsorship_period/update.html'
-        ]
-        self.assertEqual(response.template_name, expected_templates)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodUpdateView_no_login(self):
-
-        response = self.client.get(reverse('sponsorshipperiod-update', kwargs={
-            'slug': self.sponsorship_period.slug,
-            'project_slug': self.project.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodUpdate_with_login(self):
-
-        self.client.login(username='timlinux', password='password')
-        post_data = {
-            'sponsor': self.sponsor.id,
-            'sponsorshiplevel': self.sponsorship_level.id,
-            'author': self.user.id
-        }
-        response = self.client.post(
-            reverse('sponsorshipperiod-update', kwargs={
-                'project_slug': self.project.slug,
-                'slug': self.sponsorship_period.slug
-            }), post_data)
-        self.assertEqual(response.status_code, 200)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodUpdate_no_login(self):
-
-        post_data = {
-            'sponsor': self.sponsor.id,
-            'sponsorshiplevel': self.sponsorship_level.id
-        }
-        response = self.client.post(
-            reverse('sponsorshipperiod-update', kwargs={
-                'slug': self.sponsorship_period.slug,
-                'project_slug': self.project.slug
-            }), post_data)
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodDeleteView_no_login(self):
-
-        response = self.client.get(reverse('sponsorshipperiod-delete', kwargs={
-            'project_slug': self.project.slug,
-            'slug': self.sponsorship_period.slug
-        }))
-        self.assertEqual(response.status_code, 302)
-
-    @override_settings(VALID_DOMAIN=['testserver', ])
-    def test_SponsorshipPeriodDelete_no_login(self):
-
-        response = self.client.post(
-            reverse('sponsorshipperiod-delete', kwargs={
-                'project_slug': self.project.slug,
-                'slug': self.sponsorship_period.slug
-            }))
-        self.assertEqual(response.status_code, 302)

@@ -11,6 +11,7 @@ __copyright__ = ''
 
 from slugify import Slugify
 from django.http import Http404, HttpResponse
+import json
 
 
 version_slugify = Slugify()

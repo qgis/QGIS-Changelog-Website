@@ -9,9 +9,9 @@ git+https://github.com/ckrybus/crispy-bulma.git@2e9abb0
 Django~=4.2
 git+https://github.com/Xpirix/dj-stripe.git@django4_update
 django-allauth~=0.63
-django-braces~=1.15
+django-braces~=1.17
 # disqus
-django-disqus~=0.5
+# django-disqus~=0.5
 django-colorfield~=0.11
 django-countries~=7.6
 django-crispy-forms~=2.1

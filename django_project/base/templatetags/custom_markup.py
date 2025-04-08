@@ -13,6 +13,7 @@ register = template.Library()
 def klass(ob):
     return ob.__class__.__name__
 
+
 @register.filter(name='base_markdown', is_safe=True)
 @stringfilter
 def base_markdown(value):
@@ -93,6 +94,7 @@ def columns(thelist, n):
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
+
 
 @register.simple_tag(takes_context=True)
 def version_tag(context):

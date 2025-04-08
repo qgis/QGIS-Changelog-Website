@@ -276,8 +276,7 @@ class TestGithubDownloadImage(TestCase):
         self.client.login(username='timlinux', password='password')
         response = self.client.get(
             reverse('download-referenced-images', kwargs={
-                'slug': self.version.slug,
-                'project_slug': self.project.slug
+                'slug': self.version.slug
             }),
             content_type='application/json',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
