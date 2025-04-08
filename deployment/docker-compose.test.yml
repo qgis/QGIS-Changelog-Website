@@ -1,5 +1,5 @@
 services:
-  uwsgi: &uwsgi-common=
+  uwsgi: &uwsgi-common
 
   devweb:
     environment:
