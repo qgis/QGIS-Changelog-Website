@@ -87,6 +87,27 @@ update-migrations:
 	@echo "------------------------------------------------------------------"
 	@docker compose exec uwsgi python manage.py makemigrations
 
+start:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Starting a specific container(s) in production mode. Use web if you want to start all."
+	@echo "------------------------------------------------------------------"
+	@docker compose up -d $(c)
+
+restart:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Restarting all or a specific container(s) in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker compose restart $(c)
+
+kill:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Killing all or a specific container(s) in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker compose kill $(c)
+
 collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -137,9 +158,9 @@ rm-only: kill
 logs:
 	@echo
 	@echo "------------------------------------------------------------------"
-	@echo "Showing uwsgi logs in production mode"
+	@echo "Tailing all logs or a specific container"
 	@echo "------------------------------------------------------------------"
-	@docker compose logs -f --tail=50 uwsgi
+	@docker compose logs -f $(c)
 
 dblogs:
 	@echo
@@ -148,19 +169,61 @@ dblogs:
 	@echo "------------------------------------------------------------------"
 	@docker compose logs -f --tail=50 db
 
-nginxlogs:
+uwsgi-shell:
 	@echo
 	@echo "------------------------------------------------------------------"
-	@echo "Showing nginx logs in production mode"
+	@echo "Shelling into the uwsgi container(s)"
 	@echo "------------------------------------------------------------------"
-	@docker compose logs -f --tail=50 web
+	@docker compose exec uwsgi bash 
+
+uwsgi-reload:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Reload django project in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker compose exec uwsgi bash -c 'uwsgi uwsgi --reload  /tmp/django.pid'
+
+uwsgi-errors:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Tailing errors in the uwsgi container(s)"
+	@echo "------------------------------------------------------------------"
+	@docker compose exec uwsgi bash -c 'tail -f /var/log/uwsgi-errors.log'
+
+uwsgi-logs:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Tailing access logs in uwsgi container(s)"
+	@echo "------------------------------------------------------------------"
+	@docker compose exec uwsgi bash -c 'tail -f /var/log/uwsgi-requests.log'
+
+web-shell:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling into the NGINX/WEB container(s)"
+	@echo "------------------------------------------------------------------"
+	@docker compose exec web bash 
+
+web-logs:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Tailing logs in NGINX/WEB container(s)"
+	@echo "------------------------------------------------------------------"
+	@docker compose logs -f web
 
 shell:
 	@echo
 	@echo "------------------------------------------------------------------"
-	@echo "Shelling in in production mode"
+	@echo "Shelling into a specific container"
 	@echo "------------------------------------------------------------------"
-	@docker compose exec uwsgi /bin/bash
+	@docker compose exec $(c) bash
+
+exec:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Execute a specific docker command"
+	@echo "------------------------------------------------------------------"
+	@docker compose $(c)
 
 superuser:
 	@echo
