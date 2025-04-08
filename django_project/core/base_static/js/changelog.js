@@ -6,14 +6,6 @@
  * To change this template use File | Settings | File Templates.
  */
 
-$(function () {
-
-    $('.tooltip-toggle').tooltip(
-        {container: 'body'}
-    );
-
-});
-
 $( "#id_version" ).change(function() {
   update_category_list($(this).val());
 });
