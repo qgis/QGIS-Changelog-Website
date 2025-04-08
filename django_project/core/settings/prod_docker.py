@@ -4,11 +4,12 @@
 from .prod import *  # noqa
 import ast
 import os
-print(os.environ)
 
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = ['https://*.qgis.org']
 
 ADMINS = (
     # ('Dimas Ciputra', 'dimas@kartoza.com'),
