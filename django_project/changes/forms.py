@@ -6,7 +6,6 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (
     Layout,
     Fieldset,
-    Submit,
     Field,
     HTML,
 )
@@ -15,13 +14,12 @@ from .models import (
     Version,
     Entry,
 )
-from changes.utils.svgimagefile import SVGAndImageFormField
 from crispy_bulma.widgets import FileUploadInput
 
 FileUploadInput.template_name = 'widgets/file_upload_input.html'
 
-class CategoryForm(forms.ModelForm):
 
+class CategoryForm(forms.ModelForm):
     # noinspection PyClassicStyleClass
     class Meta:
         model = Category
@@ -87,6 +85,7 @@ class CategoryForm(forms.ModelForm):
 class VersionForm(forms.ModelForm):
     image_file = forms.ImageField(widget=FileUploadInput)
     # noinspection PyClassicStyleClass
+
     class Meta:
         model = Version
         fields = (
@@ -152,6 +151,7 @@ class EntryForm(forms.ModelForm):
 
     # noinspection PyClassicStyleClass
     image_file = forms.ImageField(widget=FileUploadInput, required=False)
+
     class Meta:
         model = Entry
         fields = (
