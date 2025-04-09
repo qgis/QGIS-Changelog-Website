@@ -155,7 +155,7 @@ rm-only: kill
 	@echo "------------------------------------------------------------------"
 	@docker compose down
 
-logs:
+logs: db
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Tailing all logs or a specific container"
