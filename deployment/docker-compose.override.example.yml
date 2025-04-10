@@ -29,6 +29,7 @@ volumes:
       o: bind
 services:
   uwsgi:
+    image: ${UWSGI_DOCKER_IMAGE}
     build:
       context: ${PWD}/../
       dockerfile: deployment/docker/Dockerfile

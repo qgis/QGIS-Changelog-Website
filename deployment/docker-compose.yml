@@ -31,6 +31,7 @@ services:
       internal:
 
   uwsgi: &uwsgi-common
+    image: ${UWSGI_DOCKER_IMAGE}
     build:
       context: ${PWD}/../
       dockerfile: deployment/docker/Dockerfile
