@@ -7,11 +7,6 @@ volumes:
       type: none
       device: ${PWD}/pg/postgres_data
       o: bind
-  db-backups:
-    driver_opts:
-      type: none
-      device: ${PWD}/backups
-      o: bind
   static-data:
     driver_opts:
       type: none
@@ -34,27 +29,30 @@ volumes:
       o: bind
 services:
   uwsgi:
+    image: ${UWSGI_DOCKER_IMAGE}
     build:
       context: ${PWD}/../
       dockerfile: deployment/docker/Dockerfile
       target: prod
     volumes:
       - ../django_project:/home/web/django_project
+      - ${MEDIA_VOLUME}:/home/web/media:rw
       - ./logs:/var/log
 
   web:
     volumes:
       - ./logs:/var/log/nginx
+      - ${MEDIA_VOLUME}:/home/web/media:ro
     ports:
-      - "${HTTP_PORT}:8080"
+      - "${HTTP_PORT}:80"
       - "${HTTPS_PORT}:443"
 
   devweb:
-    image: kartoza/project-uwsgi:dev-latest
     build:
       context: ${PWD}/../
       dockerfile: deployment/docker/Dockerfile
       target: dev
     volumes:
       - ../django_project:/home/web/django_project
+      - ${MEDIA_VOLUME}:/home/web/media:rw
       - ./logs:/var/log

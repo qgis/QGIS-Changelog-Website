@@ -14,14 +14,6 @@ volumes:
   reports-data:
   nginx-conf:
 services:
-  # smtp:
-  #   image: catatnight/postfix
-  #   hostname: postfix
-  #   environment:
-  #     # You could change this to something more suitable
-  #     - maildomain=kartoza.com
-  #     - smtp_user=noreply:docker
-  #   restart: unless-stopped
 
   db:
     image: kartoza/postgis:16-3.4
@@ -35,12 +27,17 @@ services:
     restart: unless-stopped
     ports:
       - "7543:5432"
+    networks:
+      internal:
 
   uwsgi: &uwsgi-common
+    image: ${UWSGI_DOCKER_IMAGE}
     build:
       context: ${PWD}/../
       dockerfile: deployment/docker/Dockerfile
       target: prod
+    expose:
+      - "8080"
     environment:
       - DATABASE_NAME=${DATABASE_NAME}
       - DATABASE_USERNAME=${DATABASE_USERNAME}
@@ -71,6 +68,7 @@ services:
       - static-data:/home/web/static:rw
       - media-data:/home/web/media:rw
       - reports-data:/home/web/reports
+      - ./docker/uwsgi.conf:/uwsgi.conf
     command: bash -c "npm install && npm run build && uwsgi --ini /uwsgi.conf"
     links:
       - db:db
@@ -82,6 +80,8 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+    networks:
+      internal:
 
   dbbackups:
     image: kartoza/pg-backup:16-3.4
@@ -102,14 +102,25 @@ services:
       - POSTGRES_HOST=${DATABASE_HOST}
       - PGDATABASE=${DATABASE_NAME}
     restart: unless-stopped
+    networks:
+      internal:
 
   # This is normally the main entry point for a production server
   web:
     image: nginx
+    entrypoint:
+    - /etc/nginx/sites-available/docker-entrypoint.sh
+    ports:
+    - "80:80"
+    - "443:443"
+    command:
+    - ${WEB_ENV}
     volumes:
-      - nginx-conf:/etc/nginx/conf.d:ro
+      - nginx-conf:/etc/nginx/sites-available/:ro
       - static-data:/home/web/static:ro
       - media-data:/home/web/media:ro
+      - ./webroot:/var/www/webroot
+      - ./certbot-etc:/etc/letsencrypt
     links:
       - uwsgi:uwsgi
     restart: unless-stopped
@@ -118,6 +129,8 @@ services:
       options:
         max-size: "10m"
         max-file: "10"
+    networks:
+      internal:
 
   # This is the entry point for a development server.
   # Run with --no-deps to run attached to the services
@@ -130,6 +143,8 @@ services:
       target: dev
     ports:
       - "62202:8000"
+    networks:
+      internal:
 
   webpack:
     build:
@@ -142,5 +157,21 @@ services:
       - ../django_project:/home/web/django_project
       - static-data:/home/web/static:rw
       - ${MEDIA_VOLUME}:/home/web/media:rw
+    networks:
+      internal:
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./webroot:/var/www/webroot
+      - ./certbot-etc:/etc/letsencrypt
+    depends_on:
+      - web
+    command: certonly --webroot --webroot-path=/var/www/webroot --email admin@qgis.org --agree-tos --no-eff-email --force-renewal -d ${VIRTUAL_HOST:-changelog.qgis.org}
+    networks:
+      internal:
 
 
+networks:
+    internal:

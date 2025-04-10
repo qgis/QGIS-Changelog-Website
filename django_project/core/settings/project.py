@@ -54,7 +54,6 @@ PIPELINE['JAVASCRIPT']['project'] = {
     'source_filenames': (
         'js/csrf-ajax.js',
         'js/changelog.js',
-        'js/github-issue.js',
         'js/entry.js',
         'js/category.js',
         'js/form.js',

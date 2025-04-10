@@ -58,3 +58,6 @@ pyjwt~=2.8
 # Webpack
 django-webpack-loader~=3.1
 sorl-thumbnail~=12.11
+
+# Resend email
+resend~=2.7
