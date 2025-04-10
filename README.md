@@ -81,6 +81,13 @@ So as to create your admin account:
 make superuser
 ```
 
+To fix missing dates on releases, run:
+```
+make uwsgi-shell
+python manage.py update-versions-release-date
+# Exit the shell with CTRL+D
+```
+
 **intercom.io**
 
 If you wish to make use of [intercom.io](https://www.intercom.io), include a
