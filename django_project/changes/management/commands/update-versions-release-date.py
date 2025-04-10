@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from changes.models import Version
 from datetime import datetime
 
+
 class Command(BaseCommand):
   help = 'Update the release date for each version based on its name'
 
