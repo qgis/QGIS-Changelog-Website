@@ -35,6 +35,7 @@ def handler500(request):
     print(error_traceback)  # Print the error traceback for debugging
     return HttpResponseServerError(t.render({
         'request': request,
+        'user': request.user,  # Add the user to the context
     }))
 
 

@@ -33,15 +33,15 @@ DATABASES = {
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = os.environ.get(
-    'EMAIL_HOST', 'smtp')
+    'EMAIL_HOST', 'smtp.resend.com')
 EMAIL_HOST_USER = os.environ.get(
-    'EMAIL_HOST_USER', 'noreply@kartoza.com')
+    'EMAIL_HOST_USER', 'automation@qgis.org')
 EMAIL_HOST_PASSWORD = os.environ.get(
-    'EMAIL_HOST_PASSWORD', 'docker')
+    'EMAIL_HOST_PASSWORD', 'your_resend_api_key')
 EMAIL_PORT = os.environ.get(
-    'EMAIL_PORT', 'True')
+    'EMAIL_PORT', '587')
 EMAIL_SUBJECT_PREFIX = os.environ.get(
-    'EMAIL_SUBJECT_PREFIX', '[PROJECTA]')
+    'EMAIL_SUBJECT_PREFIX', '[QGIS Changelog]')
 EMAIL_USE_TLS = ast.literal_eval(os.environ.get(
     'EMAIL_USE_TLS', 'True'))
 EMAIL_USE_SSL = ast.literal_eval(os.environ.get(
