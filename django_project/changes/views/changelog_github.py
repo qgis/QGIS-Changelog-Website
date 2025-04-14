@@ -256,6 +256,10 @@ def download_all_referenced_images(request, **kwargs):
             content = entry.description
             md = markdown.Markdown(extensions=[ImgExtExtension()])
             html = md.convert(content)
+            # The above line will add unnecessary p tags
+            # that will break the notable fixes tables
+            # So we need to remove them
+            html = html.replace('<p>', '').replace('</p>', '')
             try:
                 images = md.images
                 if len(images) > 0:
