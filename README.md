@@ -88,6 +88,14 @@ python manage.py update-versions-release-date
 # Exit the shell with CTRL+D
 ```
 
+To fix display issues with entries (notable fixes tables...), run:
+
+```
+make uwsgi-shell
+python manage.py fix_broken_entries
+# Exit the shell with CTRL+D
+```
+
 **intercom.io**
 
 If you wish to make use of [intercom.io](https://www.intercom.io), include a
