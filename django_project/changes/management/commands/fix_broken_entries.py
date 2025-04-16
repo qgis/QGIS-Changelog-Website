@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from changes.models import Entry
 
+
 class Command(BaseCommand):
     help = 'Fix broken entries by removing <p> and </p> tags from descriptions'
 
