@@ -227,8 +227,7 @@ class TestGithubDownloadImage(TestCase):
         self.client.post(
             '/set_language/', data={'language': 'en'})
         logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create(
-            name='testproject')
+        self.project = ProjectF.create()
         self.version = VersionF.create(
             project=self.project,
             name='1.0.1')
