@@ -3,7 +3,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.management import call_command
 from django.test import TestCase
 
-from changes.tests.model_factories import EntryF
+from changes.tests.model_factories import EntryF, CategoryF, VersionF
+from base.tests.model_factories import ProjectF
 
 
 class FixUrlImageEntryTest(TestCase):
@@ -15,7 +16,14 @@ class FixUrlImageEntryTest(TestCase):
         )
         image_uploaded = SimpleUploadedFile(
             'gif.gif', gif_byte, content_type='image/gif')
-        self.entry = EntryF.create(image_file=image_uploaded)
+        self.project = ProjectF.create()
+        self.category = CategoryF.create(project=self.project)
+        self.version = VersionF.create(project=self.project)
+        self.entry = EntryF.create(
+            image_file=image_uploaded,
+            category=self.category,
+            version=self.version,
+        )
         old_path = self.entry.image_file.url
         self.entry.image_file = old_path
         self.entry.save()

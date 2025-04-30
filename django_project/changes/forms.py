@@ -83,7 +83,7 @@ class CategoryForm(forms.ModelForm):
 
 
 class VersionForm(forms.ModelForm):
-    image_file = forms.ImageField(widget=FileUploadInput)
+    image_file = forms.ImageField(widget=FileUploadInput, required=False)
     # noinspection PyClassicStyleClass
 
     class Meta:

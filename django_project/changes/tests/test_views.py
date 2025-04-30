@@ -4,20 +4,15 @@
 import datetime
 import json
 from datetime import timedelta
-from mock import mock
+from unittest import mock
 from django.urls import reverse
-from django.core.files.uploadedfile import SimpleUploadedFile
-from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from base.tests.model_factories import ProjectF
 from changes.tests.model_factories import (
     CategoryF,
     EntryF,
-    VersionF,
-    SponsorshipLevelF,
-    SponsorF,
-    SponsorshipPeriodF)
+    VersionF)
 from core.model_factories import UserF
 import logging
 
@@ -163,7 +158,9 @@ class TestCategoryViews(TestCase):
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_CategoryDelete_no_login(self):
 
-        category_to_delete = CategoryF.create()
+        category_to_delete = CategoryF.create(
+            project=self.project,
+        )
         response = self.client.post(reverse('category-delete', kwargs={
             'slug': category_to_delete.slug
         }))
@@ -252,8 +249,7 @@ class TestEntryViews(TestCase):
         self.client.post(
                 '/set_language/', data={'language': 'en'})
         logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create(
-                name='testproject')
+        self.project = ProjectF.create()
         self.version = VersionF.create(
                 project=self.project,
                 name='1.0.1')
@@ -486,7 +482,7 @@ class TestVersionViews(TestCase):
         self.client.post(
                 '/set_language/', data={'language': 'en'})
         logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create(name='testproject')
+        self.project = ProjectF.create()
         self.version = VersionF.create(
                 project=self.project,
                 name='1.0.1')
@@ -687,10 +683,10 @@ class TestVersionViews(TestCase):
 
     @override_settings(VALID_DOMAIN=['testserver', ])
     def test_VersionDownload_no_login(self):
-        other_project = ProjectF.create(name='testproject2')
+        other_project = ProjectF.create()
         version_same_name_from_other_project = VersionF.create(
             project=other_project,
-            name='1.0.1'
+            name='1.0.2'
         )
         response = self.client.get(reverse('version-download', kwargs={
             'slug': version_same_name_from_other_project.slug
@@ -701,10 +697,10 @@ class TestVersionViews(TestCase):
     @mock.patch('pypandoc.convert_text', side_effect=mocked_convert)
     def test_VersionDownload_login(self, mocked_convert):
         self.client.login(username='timlinux', password='password')
-        other_project = ProjectF.create(name='testproject2')
+        other_project = ProjectF.create()
         version_same_name_from_other_project = VersionF.create(
             project=other_project,
-            name='1.0.1'
+            name='1.0.3'
         )
         response = self.client.get(reverse('version-download', kwargs={
             'slug': version_same_name_from_other_project.slug
@@ -717,10 +713,10 @@ class TestVersionViews(TestCase):
     @override_settings(VALID_DOMAIN=['testserver', ])
     @mock.patch('pypandoc.convert_text', side_effect=mocked_convert)
     def test_VersionDownloadMd(self, mocked_convert):
-        other_project = ProjectF.create(name='testproject2')
+        other_project = ProjectF.create()
         version_same_name_from_other_project = VersionF.create(
             project=other_project,
-            name='1.0.1'
+            name='1.0.4'
         )
         response = self.client.get(reverse('version-download-md', kwargs={
             'slug': version_same_name_from_other_project.slug
@@ -772,7 +768,7 @@ class TestVersionViewsWithAnonymousUserForCRUD(TestCase):
         self.client.post(
             '/set_language/', data={'language': 'en'})
         logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create(name='testproject')
+        self.project = ProjectF.create()
         self.version = VersionF.create(
             project=self.project,
             name='1.0.1')
@@ -851,7 +847,7 @@ class TestVersionViewsWithNormalUserForCRUD(TestCase):
         self.client.post(
             '/set_language/', data={'language': 'en'})
         logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create(name='testproject')
+        self.project = ProjectF.create()
         self.version = VersionF.create(
             project=self.project,
             name='1.0.1')
@@ -967,7 +963,7 @@ class TestVersionViewsWithStaffUserForCRUD(TestCase):
         self.client.post(
             '/set_language/', data={'language': 'en'})
         logging.disable(logging.CRITICAL)
-        self.project = ProjectF.create(name='testproject')
+        self.project = ProjectF.create()
         self.version = VersionF.create(
             project=self.project,
             name='1.0.1')
