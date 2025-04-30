@@ -1,23 +1,16 @@
-# Projecta
+# QGIS Changelog website
 
-[![Projecta Screenshot](https://cloud.githubusercontent.com/assets/178003/12607822/8cdb225c-c4e0-11e5-8ab0-ba51bb6f4e93.png)](http://changelog.kartoza.com)
-
-
-A django app for creating 'visual changelogs' for software releases, and for 
-managing a software project at a high level.
-
-View a running instance at [http://changelog.kartoza.com](http://changelog.kartoza.com)
+![image](https://github.com/user-attachments/assets/cf145bdb-acca-4550-aee0-c7f2b0049c21)
 
 
-Note that whilst usable, Projecta is under continual development and not
-yet feature complete.
+A django app for creating 'visual changelogs' for QGIS releases.
 
-The latest source code is available at 
-[https://github.com/kartoza/prj.app](https://github.com/kartoza/prj.app).
+View a running instance at [https://changelog.qgis.org](https://changelog.qgis.org)
 
 * **Developers:** See our [developer guide](README-dev.md)
 * **For production:** See our [deployment guide](README-docker.md)
 
+## TODO: Update this README File
 
 ## Key features
 
