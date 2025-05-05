@@ -188,7 +188,7 @@ class TestGithubPullRequest(unittest.TestCase):
             {
                 'name': 'name',
                 'body': '## Description\r\n',
-                'html_url': 'https://github.com/kartoza/prj.app/issues/1309',
+                'html_url': 'https://github.com/qgis/QGIS-Certification-Website/issues/1309',
                 'repository_url':
                     'https://api.github.com/repos/qgis/QGIS-Django',
                 'title': 'Reorder expression operators',
