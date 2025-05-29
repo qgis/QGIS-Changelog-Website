@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := /usr/bin/env bash
 
 # ----------------------------------------------------------------------------
 #    P R O D U C T I O N     C O M M A N D S

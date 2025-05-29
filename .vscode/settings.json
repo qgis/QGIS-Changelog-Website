@@ -16,5 +16,6 @@
   },
   "[django-html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "git.enableCommitSigning": true
 }
