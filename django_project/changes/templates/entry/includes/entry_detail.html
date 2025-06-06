@@ -70,15 +70,15 @@
                 {% else %}
                     <a href="{{ entry.image_file.url }}">
                         <img class="image"
-                             src="{{ entry.image_file.url }}"
-                             alt=""/>
+                            src="{{ entry.image_file.url }}"
+                            alt=""/>
                     </a>
                 {% endif %}
             {% else %}
                 <a href="#" class="pop-image">
-                    <img id="{{ entry.image_file.url }}" class="image"
-                         src="{{ entry.image_file.url }}"
-                         alt=""/>
+                    {% thumbnail entry.image_file "1000x500" crop="center" format="WEBP" as im %}
+                        <img id="{{ entry.image_file.url }}" class="image is-rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image">
+                    {% endthumbnail %}
                 </a>
             {% endif %}
         {% endif %}
