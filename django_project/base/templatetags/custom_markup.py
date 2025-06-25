@@ -23,8 +23,9 @@ def base_markdown(value):
         extensions=extensions,
         safe_mode=True,
         enable_attributes=False)
-    html_output = html_output.replace(
-        '<table>', '<table class="table table-striped table-bordered"')
+    # html_output = html_output.replace(
+    #     '<table>', '<p><table>').replace(
+    #         '</table>', '</table></p>')
     return mark_safe(html_output)
 
 

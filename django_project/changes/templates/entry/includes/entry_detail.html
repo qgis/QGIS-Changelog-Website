@@ -53,11 +53,11 @@
        word-wrap: normal;
    }
 </style>
-    <div class="column is-8">
+    <div class="column">
         {{ entry.description|base_markdown }}
     </div>
+    {% if entry.image_file %}
     <div class="column is-4 has-text-centered">
-        {% if entry.image_file %}
             {% if entry.image_file|is_gif %}
                 {% if not rst_download %}
                     <img id="{{ entry.image_file.url }}" class="image"
@@ -81,8 +81,8 @@
                          alt=""/>
                 </a>
             {% endif %}
-        {% endif %}
-    </div>
+        </div>
+    {% endif %}
 </div>
 
 {% if entry.video %}
