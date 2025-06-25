@@ -693,11 +693,10 @@ class VersionDownloadMd(VersionMixin, DetailView):
             context=context,
             **response_kwargs
         )
-
         # convert the html to markdown
         converted_doc = pypandoc.convert_text(
             document.rendered_content.encode('utf8', 'ignore'),
-            'md', format='html', extra_args=['--wrap=none'])
+            'gfm', format='html')
         converted_doc = converted_doc.replace('/media/images/', 'images/')
 
         # prepare the ZIP file
@@ -766,10 +765,13 @@ class VersionDownloadMd(VersionMixin, DetailView):
         document = self._convert_headers(document)
         # Remove CSS styles and classes
         document = re.sub(r'\{.*?\}', '', document)
-        # Regular expression pattern for Markdown image syntax
-        pattern = re.compile(r'!\[.*?\]\((.*?)\)')
-        # Find all matches
-        images = pattern.findall(document)
+        # Use BeautifulSoup to extract image sources from HTML <img> tags
+        images = []
+        soup = BeautifulSoup(document, 'html.parser')
+        for img_tag in soup.find_all('img'):
+            src = img_tag.get('src')
+            if src and src.startswith('images/'):
+                images.append(src)
         if not images:
             images = []
 
