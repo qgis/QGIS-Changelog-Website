@@ -10,22 +10,22 @@ Note these admin models inherit reversion (which provides history for a model).
 
 """
 
-
+import reversion
 from django.contrib import admin
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
-from preferences.admin import PreferencesAdmin
 from django.utils.translation import gettext_lazy as _
-import reversion
+from preferences.admin import PreferencesAdmin
+
+from .forms import ProjectFlatpageForm
 from .models import (
-    Project,
-    ProjectScreenshot,
     Domain,
     Organisation,
+    Project,
+    ProjectFlatpage,
+    ProjectScreenshot,
     SitePreferences,
-    ProjectFlatpage
 )
-from .forms import ProjectFlatpageForm
 
 admin.site.unregister(FlatPage)
 
@@ -40,14 +40,12 @@ class ProjectScreenshotAdmin(admin.TabularInline):
 class ProjectAdmin(reversion.admin.VersionAdmin):
     """Admin for the project model."""
 
-    filter_horizontal = (
-        'certification_managers',
-        'changelog_managers',
-        'sponsorship_managers',
-        'lesson_managers',)
+    filter_horizontal = ("changelog_managers",)
 
     # Screenshot input in admin project panel.
-    inlines = [ProjectScreenshotAdmin, ]
+    inlines = [
+        ProjectScreenshotAdmin,
+    ]
 
     def queryset(self, request):
         """Ensure we use the correct manager.
@@ -79,25 +77,26 @@ class OrganisationAdmin(reversion.admin.VersionAdmin):
 class ProjectFlatPageAdmin(admin.ModelAdmin):
     form = ProjectFlatpageForm
     fieldsets = (
-        (None, {
-            'fields': (
-                'project', 'url', 'title', 'content', 'sites')
-        }), (_(
-            'Advanced options'), {
-            'classes': ('collapse',),
-            'fields': (
-                'enable_comments', 'registration_required', 'template_name')}),
+        (None, {"fields": ("project", "url", "title", "content", "sites")}),
+        (
+            _("Advanced options"),
+            {
+                "classes": ("collapse",),
+                "fields": ("enable_comments", "registration_required", "template_name"),
+            },
+        ),
     )
-    list_display = ('url', 'title', 'project')
-    list_filter = ('project', 'sites', 'registration_required')
-    search_fields = ('url', 'title')
+    list_display = ("url", "title", "project")
+    list_filter = ("project", "sites", "registration_required")
+    search_fields = ("url", "title")
 
 
 class GeneralFlatPageAdmin(FlatPageAdmin):
     def get_queryset(self, request):
         qs = super(FlatPageAdmin, self).get_queryset(request)
-        project_flatpage_ids = (
-            ProjectFlatpage.objects.all().values_list('id', flat=True))
+        project_flatpage_ids = ProjectFlatpage.objects.all().values_list(
+            "id", flat=True
+        )
         return qs.exclude(id__in=project_flatpage_ids)
 
 
