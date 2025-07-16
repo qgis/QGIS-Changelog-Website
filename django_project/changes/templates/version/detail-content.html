@@ -11,9 +11,10 @@
 <div class="columns">
     <div class="column">
         {% if not rst_download %}
-            <a href="{{ version.image_file.url }}">
-                <img class="image is-rounded"
-                    src="{{ version.image_file.url }}"/>
+        <a href="{{ version.image_file.url }}">
+                {% thumbnail version.image_file "1000x500" crop="center" format="WEBP" as im %}
+                    <img class="image is-rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image" loading="lazy">
+                {% endthumbnail %}
             </a>
         {% else %}
             <img class="image is-rounded"
