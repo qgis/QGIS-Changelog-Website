@@ -36,7 +36,7 @@
 
     <div class="rich-right" name="imagePreview">
         {% thumbnail version.image_file "400x200" crop="center" as im %}
-            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image" style="border-radius:10px;">
+            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image" style="border-radius:10px;" loading="lazy">
         {% endthumbnail %}
     </div>
 </div>

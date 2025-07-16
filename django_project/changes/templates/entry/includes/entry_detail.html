@@ -63,7 +63,7 @@
                     <img id="{{ entry.image_file.url }}" class="image"
                          data-gifffer="{{ entry.image_file.url }}"
                          src="{{ entry.image_file.url }}"
-                         gifffer-alt=""/>
+                         gifffer-alt="" loading="lazy"/>
                     <a href="#" class="pop-gif">
                         Click here for bigger size animation.
                     </a>
@@ -71,13 +71,13 @@
                     <a href="{{ entry.image_file.url }}">
                         <img class="image"
                             src="{{ entry.image_file.url }}"
-                            alt=""/>
+                            alt="" loading="lazy"/>
                     </a>
                 {% endif %}
             {% else %}
                 <a href="#" class="pop-image">
                     {% thumbnail entry.image_file "1000x500" crop="center" format="WEBP" as im %}
-                        <img id="{{ entry.image_file.url }}" class="image is-rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image">
+                        <img id="{{ entry.image_file.url }}" class="image is-rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image" loading="lazy">
                     {% endthumbnail %}
                 </a>
             {% endif %}
