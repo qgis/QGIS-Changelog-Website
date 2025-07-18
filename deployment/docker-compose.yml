@@ -7,7 +7,7 @@
 #
 # See accompanying Make commands for easy collectstatic etc.
 volumes:
-  postgres-data:
+  postgres-data-hello:
   db-backups:
   static-data:
   media-data:
@@ -18,7 +18,7 @@ services:
   db:
     image: kartoza/postgis:16-3.4
     volumes:
-      - postgres-data:/var/lib/postgresql
+      - postgres-data-hello:/var/lib/postgresql
       - db-backups:/backups
     environment:
       - POSTGRES_USER=${DATABASE_USERNAME}
