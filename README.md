@@ -48,6 +48,7 @@
     <li><a href="#-contributing"> ✨ Contributing </a></li>
     <li><a href="#-have-questions"> 🙋 Have Questions? </a></li>
     <li><a href="#-contributors"> 🧑‍💻👩‍💻 Contributors </a></li>
+    <li><a href="#-credits"> 🙏 Credits </a></li>
   </ol>
 </details>
 
@@ -60,6 +61,7 @@
 
 ![-----------------------------------------------------](./img/green-gradient.png)
 
+## 🚥 QA Status
 
 ### 🪪 Badges
 | Badge | Description |
@@ -158,7 +160,7 @@ Thank you to the individual contributors who have helped to build the QGIS Chang
 
 ![-----------------------------------------------------](./img/green-gradient.png)
 
-## Credits
+## 🙏 Credits
 
 The original project called [Projecta](https://github.com/kartoza/projecta.git) was funded and developed by [Kartoza.com](http://kartoza.com) and individual contributors.
 

@@ -58,7 +58,7 @@ Now, the configured checks (such as linting and formatting) will run automatical
 
 ![-----------------------------------------------------](./img/green-gradient.png)
 
-### ❄️ Nix Support
+### ❄️ Nix
 
 If you use Nix or NixOS, you can set up the development environment with:
 
