@@ -17,5 +17,8 @@
   "[django-html]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "git.enableCommitSigning": true
+  "git.enableCommitSigning": true,
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  }
 }

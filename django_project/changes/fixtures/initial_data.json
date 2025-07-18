@@ -1,0 +1,67 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$600000$zrjsWMbBtuGfPjxi62DMgT$Meog7HsW+s5Yv439ya/+SeV2MwFbfu1G/rkoY8Ubp54=",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "qgisadmin",
+      "first_name": "",
+      "last_name": "",
+      "email": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2025-07-18T11:58:40Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "base.organisation",
+    "pk": 1,
+    "fields": {
+      "name": "Public",
+      "approved": true,
+      "owner": null
+    }
+  },
+  {
+    "model": "base.project",
+    "pk": 1,
+    "fields": {
+      "name": "QGIS",
+      "description": "Create, edit, visualise, analyse and publish geospatial information on Windows, Mac, Linux",
+      "precis": "**QGIS** is the leading Free and Open Source Desktop GIS. It allows you to create, edit, visualise, analyse and publish geospatial information on Windows, Mac OS, Linux, BSD and Android (via the QField app). We also provide an OGC Web Server application, a web browser client and developer libraries. The QGIS project is under very active development by an enthusiastic and engaged developer community with good mechanisms for help via stack exchange, mailing lists and (optionally) through a global network of commercial support providers. QGIS is a professional GIS application and developer platform. QGIS is built on top of and proud to be itself Free and Open Source Software.\r\n\r\n**QGIS Desktop:** Powerful desktop GIS software to create, edit, visualise, analyse and publish geospatial information.\r\n**QGIS Server & Web Client:** Publish your QGIS projects and layers as OGC compatible WMS and WFS services.\r\n\r\nQGIS runs on Linux, Unix, Mac OS and Windows and supports numerous vector, raster, and database formats and functionalities.\r\n\r\n### Key Features\r\n\r\n* QGIS provides a continuously growing number of capabilities provided by core functions and plugins.\r\n* You can visualize, manage, edit, analyse data, and design maps.\r\n* **Interoperability:** support for numerous file formats and databases as well as web services.\r\n* **Customizability:** freedom to tailor the application to your needs, from custom data input forms to personalized user interfaces and workflows.\r\n* **Extensibility:** a C++ core and Python support provide the framework for everything from quick scripts to novel stand-alone applications based on the QGIS API.\r\n\r\n### QGIS Community\r\n\r\nQGIS is developed by a team of dedicated volunteers and organisations",
+      "image_file": "",
+      "accent_color": "#B8C979",
+      "project_representative_signature": "",
+      "approved": true,
+      "private": false,
+      "project_url": "http://qgis.org",
+      "project_repository_url": "https://github.com/qgis/QGIS",
+      "organisation": 1,
+      "project_representative": null,
+      "owner": 1,
+      "slug": "qgis",
+      "gitter_room": "qgis/QGIS",
+      "is_changelogs": true,
+      "changelog_managers": []
+    }
+  },
+  {
+    "model": "changes.version",
+    "pk": 1,
+    "fields": {
+      "name": "3.44",
+      "padded_version": "003044000",
+      "image_file": "",
+      "description": "The QGIS Project proudly announces the release of QGIS 3.44, a momentous release that marks the culmination of the QGIS 3 series. This release arrives within a vibrant and ever-expanding ecosystem of free and open-source geospatial tools, libraries, and community support that empowers users worldwide. Building upon the solid foundations of previous releases, QGIS 3.44 provides a stable and refined experience for all users as the project transitions to the modern Qt6 framework with the upcoming release of [QGIS 4.0](https://blog.qgis.org/2025/04/17/qgis-is-moving-to-qt6-and-launching-qgis-4-0/) in October 2025.\r\n\r\nAs the final feature release of the QGIS 3.x branch, this version ensures a reliable environment for existing workflows, and plugin developers can anticipate a smooth transition between releases, as QGIS 4.0 will retain deprecated APIs to minimize compatibility efforts and allow the ecosystem to evolve alongside the core application.\r\n\r\nWhile focused on stability and refinement, the release still includes a range of notable enhancements that refine workflows and empower users in their geospatial endeavors. Such enhancements include refinements to database management and connectivity, improved data provider flexibility, and new project settings. Old favourites such as the Processing toolbox and QGIS Expressions also see their fair share of improvements, and cartographic capabilities get a boost with new labelling and layout updates.\r\n\r\nFor a whirlwind tour of all the new functionalities introduced, you can view the [highlight reel video on YouTube](https://www.youtube.com/watch?v=5a02yaDKAiE).\r\n\r\n<a href=\"https://www.youtube.com/watch?v=5a02yaDKAiE\"><img src=\"https://img.youtube.com/vi/5a02yaDKAiE/0.jpg\" /></a>\r\n\r\nQGIS is a community effort, and we would like to extend a big thank you to the developers, documenters, testers, and the many folks out there who volunteer their time and effort (or fund people to do so) to make these releases possible. From the QGIS community, we hope you enjoy this release! If you wish to donate time, money, or otherwise contribute towards making QGIS more awesome, please wander along to [QGIS.ORG](https://qgis.org) and lend a hand!\r\n\r\nQGIS is supported by donors and sustaining members. A current list of donors who have made financial contributions large or small to the project can be seen on our [list of donors](https://qgis.org/en/site/about/sustaining_members.html#list-of-donors). If you would like to become an official project sustaining member, please visit our [sustaining member page](https://qgis.org/en/site/about/sustaining_members.html) for more details. Sponsoring QGIS helps us to fund our regular developer meetings, maintain project infrastructure, and fund bug-fixing efforts. A complete list of current sponsors is provided below - our very big thank you to all of our sponsors!\r\n\r\nQGIS is free software and you are under no obligation to pay anything to use it - in fact, we want to encourage people far and wide to use it regardless of their financial or social status - we believe that empowering people with spatial decision-making tools will result in a better society for all of humanity.",
+      "release_date": "2025-06-20",
+      "locked": false,
+      "author": 1,
+      "slug": "3.44",
+      "project": 1
+    }
+  }
+]
