@@ -6,7 +6,7 @@
 
 > ## 👋 Welcome to the QGIS Changelog Website!
 >
-> **This repository hosts the source code for the website creates 'visual changelogs' for QGIS releases:**
+> **This repository hosts the source code for the website that creates 'visual changelogs' for QGIS releases:**
 >
 > 🌍 [https://changelog.qgis.org](https://changelog.qgis.org)
 >
