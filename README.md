@@ -69,7 +69,8 @@
 | [![Lint and Django Unit Tests](https://github.com/qgis/QGIS-Changelog-Website/actions/workflows/test.yaml/badge.svg)](https://github.com/qgis/QGIS-Changelog-Website/actions/workflows/test.yaml) | Lint and Django Unit Tests |
 | [![Build and Push Docker Image to DockerHub](https://github.com/qgis/QGIS-Changelog-Website/actions/workflows/build-push-images-release.yaml/badge.svg)](https://github.com/qgis/QGIS-Changelog-Website/actions/workflows/build-push-images-release.yaml) | Build and Push Docker Image to DockerHub |
 | ![Website Status](https://img.shields.io/website-up-down-green-red/https/changelog.qgis.org.svg) | Website availability status |
-| ![License](https://img.shields.io/github/license/qgis/QGIS-Changelog-Website.svg) | Repository license |
+| ![License](https://img.shields.io/github/license/qgis/QGIS-Changelog-Website
+) | Repository license |
 | ![](https://img.shields.io/github/issues/qgis/QGIS-Changelog-Website.svg) | Open issues count |
 | ![](https://img.shields.io/github/issues-closed/qgis/QGIS-Changelog-Website.svg) | Closed issues count |
 | ![](https://img.shields.io/github/issues-pr/qgis/QGIS-Changelog-Website.svg) | Open pull requests count |
