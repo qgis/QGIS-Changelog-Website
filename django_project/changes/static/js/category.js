@@ -28,41 +28,31 @@ function onStopSortable(e, ui) {
             data: JSON.stringify(categories),
             success: function (response) {
                 sortableEnable();
-                if($('#order-saved').is(":visible"))
-                {
-                    $('#order-saved').hide();
-                    showOrderSaved();
-                } else {
-                    showOrderSaved();
-                }
+                showOrderSaved();
             },
             error: function (response) {
                 console.log(response);
                 sortableEnable();
-                if($('#order-not-saved').is(":visible"))
-                {
-                    $('#order-not-saved').hide();
-                    showOrderNotSaved();
-                } else {
-                    showOrderNotSaved();
-                }
+                showOrderNotSaved();
             }
-
         });
     }
-
 }
 
 function showOrderSaved() {
-    $('#order-saved').fadeIn( "fast", function() {
-        $('#order-saved').fadeOut(2000);
-    });
+    var $el = $('#order-saved');
+    $el.removeClass('is-hidden');
+    setTimeout(function() {
+        $el.addClass('is-hidden');
+    }, 2000);
 }
 
 function showOrderNotSaved() {
-    $('#order-not-saved').fadeIn( "fast", function() {
-        $('#order-not-saved').fadeOut(2000);
-    });
+    var $el = $('#order-not-saved');
+    $el.removeClass('is-hidden');
+    setTimeout(function() {
+        $el.addClass('is-hidden');
+    }, 2000);
 }
 
 function sortableEnable() {

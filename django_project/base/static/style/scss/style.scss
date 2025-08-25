@@ -380,3 +380,22 @@ a.is-active > span {
 .rounded .rich-right img {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
+
+
+ul .order {
+    list-style-type: none;
+    cursor: move;
+    padding: 10px;
+    margin-left: -40px !important;
+    margin-right: 0px !important;
+}
+
+.order:hover {
+    background-color: #EEEEEE;
+}
+
+ul.ui-sortable-disabled .order{
+    background-color: white;
+    color: darkgrey;
+    cursor: default;
+}

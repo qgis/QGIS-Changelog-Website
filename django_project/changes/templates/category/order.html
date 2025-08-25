@@ -1,10 +1,14 @@
 {% extends "base_with_sidebar.html" %}
-{% load thumbnail %}
+{% load static thumbnail %}
 
 {% block title %}Categories - {{ block.super }}{% endblock %}
 
 {% block extra_head %}
 {% endblock %}
+
+{% block js_head %}
+    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+{% endblock js_head %}
 
 {% block page_title %}
     <h1 class="title">Categories (all)</h1>
@@ -12,67 +16,69 @@
 
 {% block content %}
 
-<span id="order-saved" hidden class="notification is-success is-light" style="font-size: 9pt; padding: 3px;font-style: italic;">
-    order saved
-</span>
-<span id="order-not-saved" hidden class="notification is-danger is-light" style="font-size: 9pt; padding: 3px;font-style: italic;">
-    order not saved
-</span>
+<div class="box-content">
 
-<div class="columns is-vcentered">
-    <div class="column">
-        <h1 class="title mb-0">
-            <span class="icon">
-                <i class="fas fa-sort"></i>
-            </span>
-            Order Categories
-        </h1>
-    </div>
-    <div class="column is-narrow">
-        <div class="buttons mb-0 mt-3">
-            <a class="button is-light"
-               href='{% url "category-list" %}'
-               data-title="Category List">
+    <div class="columns is-vcentered">
+        <div class="column">
+            <h1 class="title mb-0">
                 <span class="icon">
-                    <i class="fas fa-list"></i>
+                    <i class="fas fa-sort"></i>
                 </span>
-            </a>
+                Order Categories
+                <span id="order-saved" class="notification is-success is-light is-hidden" style="font-size: 9pt; padding: 3px;font-style: italic;">
+                    order saved
+                </span>
+                <span id="order-not-saved" class="notification is-danger is-light is-hidden" style="font-size: 9pt; padding: 3px;font-style: italic;">
+                    order not saved
+                </span>
+            </h1>
+        </div>
+        <div class="column is-narrow">
+            <div class="buttons mb-0 mt-3">
+                <a class="button is-light"
+                   href='{% url "category-list" %}'
+                   data-title="Category List">
+                    <span class="icon">
+                        <i class="fas fa-list"></i>
+                    </span>
+                </a>
+            </div>
         </div>
     </div>
+        {% if num_categories == 0 %}
+            <h3 class="subtitle">No categories are defined.</h3>
+        {% endif %}
+        <ul id="sortable" data-url="{% url "category-submit-order" %}">
+        {% for category in categories %}
+            <li class="order card" id="{{ category.id }}-{{ category.name }}">
+                <div class="media">
+                    <div class="media-left">
+                        {% if category.image_file %}
+                            <a href="{{ category.image_file.url }}">
+                                {% thumbnail category.image_file "50x50" crop="center" as im %}
+                                    <figure class="image is-50x50">
+                                        <img class="is-rounded"
+                                             src="{{ im.url }}"
+                                             width="{{ im.width }}"
+                                             height="{{ im.height }}" />
+                                    </figure>
+                                {% endthumbnail %}
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="media-content">
+                        <p>
+                            <span class="icon">
+                                <i class="fas fa-bars"></i>
+                            </span>
+                            {{ category.name }}
+                        </p>
+                    </div>
+                </div>
+            </li>
+        {%  endfor %}
+        </ul>
 </div>
-    {% if num_categories == 0 %}
-        <h3 class="subtitle">No categories are defined, but you can</h3>
-    {% endif %}
-    <ul id="sortable" data-url="{% url "category-submit-order" %}">
-    {% for category in categories %}
-        <li class="box" style="margin-top:6px;" id="{{ category.id }}-{{ category.name }}">
-            <div class="media">
-                <div class="media-left">
-                    {% if category.image_file %}
-                        <a href="{{ category.image_file.url }}">
-                            {% thumbnail category.image_file "50x50" crop="center" as im %}
-                                <figure class="image is-50x50">
-                                    <img class="is-rounded"
-                                         src="{{ im.url }}"
-                                         width="{{ im.width }}"
-                                         height="{{ im.height }}" />
-                                </figure>
-                            {% endthumbnail %}
-                        </a>
-                    {% endif %}
-                </div>
-                <div class="media-content">
-                    <p>
-                        <span class="icon">
-                            <i class="fas fa-bars"></i>
-                        </span>
-                        {{ category.name }}
-                    </p>
-                </div>
-            </div>
-        </li>
-    {%  endfor %}
-    </ul>
-    <hr />
+
 
 {% endblock %}
