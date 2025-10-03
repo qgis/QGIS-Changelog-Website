@@ -26,7 +26,7 @@ RUN dpkg -i pandoc-3.2-1-amd64.deb && rm pandoc-3.2-1-amd64.deb
 # In the future, we may have to include rust toolchain in the Dockerfile
 ENV CRYPTOGRAPHY_DONT_BUILD_RUST=1
 
-RUN apt-get update -y && apt-get -y install git build-essential libpangocairo-1.0-0
+RUN apt-get update -y && apt-get -y install git cmake build-essential pkg-config libcairo2-dev libpangocairo-1.0-0
 ADD deployment/docker/REQUIREMENTS.txt /REQUIREMENTS.txt
 ADD deployment/docker/uwsgi.conf /uwsgi.conf
 ADD django_project /home/web/django_project
