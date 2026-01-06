@@ -20,5 +20,5 @@ COMPOSE_FILES="-f ${DEPLOYMENT_DIR}/docker-compose.yml -f ${DEPLOYMENT_DIR}/dock
 # Renew SSL certificates
 docker compose ${COMPOSE_FILES} run certbot renew
 
-# Restart web service to apply new certificates
-docker compose ${COMPOSE_FILES} restart web
+# Hot reload the web service to apply new certificates
+docker compose ${COMPOSE_FILES} kill -s SIGHUP web
