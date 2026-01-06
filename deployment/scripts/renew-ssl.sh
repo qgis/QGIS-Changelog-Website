@@ -13,5 +13,12 @@
 
 #25 11 * * * /bin/bash /home/web/QGIS-Changelog-Website/deployment/scripts/renew_ssl.sh > /tmp/ssl-renewal-logs.txt
 
+# Set variables for cleaner commands
+DEPLOYMENT_DIR="/home/web/QGIS-Changelog-Website/deployment"
+COMPOSE_FILES="-f ${DEPLOYMENT_DIR}/docker-compose.yml -f ${DEPLOYMENT_DIR}/docker-compose.override.yml"
 
-docker compose -f /home/web/QGIS-Changelog-Website/deployment/docker-compose.yml -f /home/web/QGIS-Changelog-Website/deployment/docker-compose.override.yml run certbot renew
+# Renew SSL certificates
+docker compose ${COMPOSE_FILES} run certbot renew
+
+# Hot reload the web service to apply new certificates
+docker compose ${COMPOSE_FILES} kill -s SIGHUP web
