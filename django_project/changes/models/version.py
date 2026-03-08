@@ -110,8 +110,7 @@ class Version(models.Model):
         # new), or when a thumbnail is missing for an existing image.
         if self.image_file:
             needs_thumb = (
-                old_image_name != self.image_file.name
-                or not self.image_file_thumbnail
+                old_image_name != self.image_file.name or not self.image_file_thumbnail
             )
             if needs_thumb:
                 self._generate_thumbnail()
