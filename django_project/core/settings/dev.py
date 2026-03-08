@@ -8,11 +8,14 @@ LOGGING_LOG_SQL = DEBUG
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Disable caching while in development
+# LocMemCache resets on every process restart so there is no stale-state risk
+# in development. It also lets sorl-thumbnail cache thumbnail lookups in memory
+# (sorl always uses the 'default' cache alias; DummyCache broke this).
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-    }
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'default',
+    },
 }
 
 # Make sure static files storage is set to default
@@ -45,8 +48,13 @@ LOGGING = {
     'loggers': {
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'INFO',  # switch to DEBUG to show actual SQL
-        }
+            'level': 'INFO',  # switch to DEBUG to log every SQL query with duration
+        },
+        'changes.profiling': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
     },
     # root logger
     # non handled logs will propagate to the root logger
@@ -87,3 +95,6 @@ try:
     )
 except ImportError:
     pass
+
+# Prepend timing middleware so it wraps everything (including other middleware)
+MIDDLEWARE = ['core.profiling_middleware.RequestTimingMiddleware'] + MIDDLEWARE

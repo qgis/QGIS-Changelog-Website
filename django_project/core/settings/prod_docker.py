@@ -30,6 +30,15 @@ DATABASES = {
 }
 
 
+# LocMemCache keeps thumbnail KV lookups in memory per worker so sorl does not
+# hit the thumbnail_kvstore DB table on every request in production.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'default',
+    },
+}
+
 EMAIL_BACKEND = os.environ.get(
     'EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
 EMAIL_HOST = os.environ.get(
