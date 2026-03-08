@@ -84,13 +84,16 @@ class VersionListView(VersionMixin, PaginationMixin, ListView):
         context['user_can_edit'] = False
         context['user_can_delete'] = False
 
-        context['num_versions'] = self.get_queryset().count()
+        # self.object_list is already evaluated by ListView; avoid re-running
+        # get_queryset() (which would issue another Project.objects.get() call)
+        context['num_versions'] = self.object_list.count()
         context['rst_download'] = False
         project_slug = 'qgis'
         context['project_slug'] = project_slug
         if project_slug:
-            context['the_project'] = Project.objects.get(slug=project_slug)
-            context['project'] = context['the_project']
+            # Reuse the project fetched (with prefetch) in get_queryset()
+            context['the_project'] = self._project
+            context['project'] = self._project
 
         # lets check for specific user permissions here.
         if self.request.user.is_staff:
@@ -130,7 +133,10 @@ class VersionListView(VersionMixin, PaginationMixin, ListView):
         project_slug = 'qgis'
         if project_slug:
             try:
-                project = Project.objects.get(slug=project_slug)
+                project = Project.objects.prefetch_related(
+                    'changelog_managers'
+                ).get(slug=project_slug)
+                self._project = project  # Cache for reuse in get_context_data()
             except Project.DoesNotExist:
                 raise Http404(
                     'The requested project does not exist.'
@@ -157,12 +163,14 @@ class VersionDetailView(VersionMixin, DetailView):
         :rtype: dict
         """
         context = super(VersionDetailView, self).get_context_data(**kwargs)
-        versions = self.get_object()
+        # self.object is already set by DetailView.get() — avoid a second query
+        versions = self.object
         sponsors = {}
 
-        # group sponsors by sponsorship level
-        if versions.sponsors():
-            for sponsor in versions.sponsors():
+        # Cache the sponsors queryset to avoid evaluating it twice
+        sponsors_qs = versions.sponsors()
+        if sponsors_qs:
+            for sponsor in sponsors_qs:
                 if sponsor.sponsorship_level not in sponsors:
                     sponsors[sponsor.sponsorship_level] = []
 
@@ -174,7 +182,8 @@ class VersionDetailView(VersionMixin, DetailView):
         project_slug = 'qgis'
         context['project_slug'] = project_slug
         if project_slug:
-            context['project'] = Project.objects.get(slug=project_slug)
+            # Reuse the project already fetched (with prefetch) in get_object()
+            context['project'] = self._project
 
         # lets check for specific user permissions here.
         if self.request.user.is_staff:
@@ -213,12 +222,17 @@ class VersionDetailView(VersionMixin, DetailView):
         project_slug = 'qgis'
         if slug and project_slug:
             try:
-                project = Project.objects.get(slug=project_slug)
+                project = Project.objects.prefetch_related(
+                    'changelog_managers'
+                ).get(slug=project_slug)
+                self._project = project  # Cache for reuse in get_context_data()
             except Project.DoesNotExist:
                 raise Http404(
                     'Requested project does not exist.')
             try:
-                obj = queryset.filter(project=project).get(slug=slug)
+                obj = queryset.filter(project=project).select_related(
+                    'project'
+                ).get(slug=slug)
                 return obj
             except Version.DoesNotExist:
                 raise Http404(

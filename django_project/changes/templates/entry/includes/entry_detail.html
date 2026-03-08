@@ -1,5 +1,4 @@
 {% load custom_markup %}
-{% load thumbnail %}
 {% load embed_video_tags %}
 
 <div class="columns">
@@ -60,10 +59,13 @@
     <div class="column is-4 has-text-centered">
             {% if entry.image_file|is_gif %}
                 {% if not rst_download %}
-                    <img id="{{ entry.image_file.url }}" class="image"
-                         data-gifffer="{{ entry.image_file.url }}"
-                         src="{{ entry.image_file.url }}"
-                         gifffer-alt="" loading="lazy"/>
+                    <div class="img-lazy-wrapper">
+                        <img id="{{ entry.image_file.url }}" class="image"
+                             data-gifffer="{{ entry.image_file.url }}"
+                             src="{{ entry.image_file.url }}"
+                             gifffer-alt="" loading="lazy"
+                             onload="this.closest('.img-lazy-wrapper').classList.add('loaded')"/>
+                    </div>
                     <a href="#" class="pop-gif">
                         Click here for bigger size animation.
                     </a>
@@ -75,11 +77,14 @@
                     </a>
                 {% endif %}
             {% else %}
-                <a href="#" class="pop-image">
-                    {% thumbnail entry.image_file "1000x500" crop="center" format="WEBP" as im %}
-                        <img id="{{ entry.image_file.url }}" class="image is-rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image" loading="lazy">
-                    {% endthumbnail %}
-                </a>
+                <div class="img-lazy-wrapper">
+                    <a href="#" class="pop-image">
+                        <img id="{{ entry.image_file.url }}" class="image is-rounded"
+                             src="{{ entry.image_file.url }}"
+                             alt="Version image" loading="lazy"
+                             onload="this.closest('.img-lazy-wrapper').classList.add('loaded')">
+                    </a>
+                </div>
             {% endif %}
         </div>
     {% endif %}

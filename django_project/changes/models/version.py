@@ -4,6 +4,7 @@ from django.urls import reverse
 from common.utilities import version_slugify
 import os
 import logging
+from functools import cached_property
 from .entry import Entry
 from .sponsorship_period import SponsorshipPeriod
 from core.settings.contrib import STOP_WORDS
@@ -45,6 +46,12 @@ class Version(models.Model):
         upload_to=os.path.join(MEDIA_ROOT, 'images/projects'),
         blank=True)
 
+    image_file_thumbnail = models.ImageField(
+        help_text='Auto-generated 1000×500 WEBP thumbnail of image_file.',
+        upload_to='images/thumbnails/versions/',
+        blank=True,
+        editable=False)
+
     description = models.TextField(
         null=True,
         blank=True,
@@ -83,7 +90,82 @@ class Version(models.Model):
             new_list = ' '.join(filtered_words)
             self.slug = version_slugify(new_list)[:50]
         self.padded_version = self.pad_name(str(self.get_numerical_name()))
+
+        # Detect whether image_file has changed so we know whether to
+        # regenerate the thumbnail after saving.
+        old_image_name = None
+        if self.pk:
+            try:
+                old_image_name = (
+                    Version.objects.filter(pk=self.pk)
+                    .values_list('image_file', flat=True)
+                    .first()
+                )
+            except Exception:
+                pass
+
         super(Version, self).save(*args, **kwargs)
+
+        # Regenerate thumbnail when image_file is set and has changed (or is
+        # new), or when a thumbnail is missing for an existing image.
+        if self.image_file:
+            needs_thumb = (
+                old_image_name != self.image_file.name or not self.image_file_thumbnail
+            )
+            if needs_thumb:
+                self._generate_thumbnail()
+
+    def _generate_thumbnail(self, width=1000, height=500):
+        """Generate a WEBP thumbnail and store it in image_file_thumbnail.
+
+        Uses centre-crop so the thumbnail always fills width×height without
+        distortion.  Saves directly via QuerySet.update() to avoid recursion.
+        """
+        from io import BytesIO
+        from PIL import Image as PILImage
+        from django.core.files.base import ContentFile
+
+        if not self.image_file:
+            return
+        try:
+            self.image_file.seek(0)
+            img = PILImage.open(self.image_file).convert('RGB')
+
+            # Centre-crop to the target aspect ratio before resizing.
+            src_ratio = img.width / img.height
+            dst_ratio = width / height
+            if src_ratio > dst_ratio:
+                # Image is wider — trim the sides.
+                new_w = int(img.height * dst_ratio)
+                left = (img.width - new_w) // 2
+                img = img.crop((left, 0, left + new_w, img.height))
+            elif src_ratio < dst_ratio:
+                # Image is taller — trim top and bottom.
+                new_h = int(img.width / dst_ratio)
+                top = (img.height - new_h) // 2
+                img = img.crop((0, top, img.width, top + new_h))
+
+            img = img.resize((width, height), PILImage.LANCZOS)
+
+            buf = BytesIO()
+            img.save(buf, format='WEBP', quality=85)
+            buf.seek(0)
+
+            base = os.path.splitext(os.path.basename(self.image_file.name))[0]
+            thumb_name = f'{base}_thumb.webp'
+
+            # save=False avoids an extra full model.save() / infinite loop.
+            self.image_file_thumbnail.save(
+                thumb_name, ContentFile(buf.read()), save=False
+            )
+            # Persist only the thumbnail field.
+            Version.objects.filter(pk=self.pk).update(
+                image_file_thumbnail=self.image_file_thumbnail.name
+            )
+        except Exception as e:
+            logger.warning(
+                'Could not generate thumbnail for Version pk=%s: %s', self.pk, e
+            )
 
     def get_numerical_name(self):
         name = self.name
@@ -144,6 +226,7 @@ class Version(models.Model):
         qs = Entry.objects.filter(version=self, category=category)
         return qs
 
+    @cached_property
     def categories(self):
         """Get a list of categories where there are one or more entries.
 
@@ -156,20 +239,19 @@ class Version(models.Model):
               {% endfor %}
               </ul>
             {% endfor %}
+
+        Uses a single DB query with select_related to avoid N+1 queries.
         """
-        qs = self.entries()
-        used = []
-        categories = []
-        for entry in qs:
-            category = entry.category
-            if category not in used:
-                row = {
-                    'category': category,
-                    'entries': self._entries_for_category(category)
-                }
-                categories.append(row)
-                used.append(category)
-        return categories
+        from itertools import groupby
+        qs = (
+            Entry.objects.filter(version=self)
+            .select_related('category', 'version')
+            .order_by('category__sort_number', 'sequence_number')
+        )
+        result = []
+        for category, entries in groupby(qs, key=lambda e: e.category):
+            result.append({'category': category, 'entries': list(entries)})
+        return result
 
     def sponsors(self):
         """Return a list of sponsors current at time of this version release.

@@ -1,4 +1,4 @@
-{% load thumbnail static custom_markup %}
+{% load static custom_markup %}
 <div class="container rich has-right rounded mt-5" {% if version.url %}ondblclick="window.open('{{ version.url }}', '_blank');"{% endif %}>
     <div class="cont coloring-1">
         <h3 name="titlePreview">
@@ -34,9 +34,15 @@
         </div>
     </div>
 
+    {% if version.image_file %}
     <div class="rich-right" name="imagePreview">
-        {% thumbnail version.image_file "400x200" crop="center" as im %}
-            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="Version image" style="border-radius:10px;" loading="lazy">
-        {% endthumbnail %}
+        <div class="img-lazy-wrapper">
+            <img src="{% if version.image_file_thumbnail %}{{ version.image_file_thumbnail.url }}{% else %}{{ version.image_file.url }}{% endif %}"
+                 alt="Version image"
+                 style="border-radius:10px; width:100%; display:block;"
+                 loading="lazy"
+                 onload="this.closest('.img-lazy-wrapper').classList.add('loaded')">
+        </div>
     </div>
+    {% endif %}
 </div>

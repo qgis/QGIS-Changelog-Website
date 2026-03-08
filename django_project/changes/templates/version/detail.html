@@ -11,6 +11,31 @@
 {% endblock js_head %}
 
 {% block extra_head %}
+<style>
+.img-lazy-wrapper {
+    position: relative;
+    background: linear-gradient(90deg, hsl(0,0%,93%) 25%, hsl(0,0%,88%) 50%, hsl(0,0%,93%) 75%);
+    background-size: 200% 100%;
+    animation: img-shimmer 1.5s ease-in-out infinite;
+    overflow: hidden;
+    border-radius: 6px;
+    min-height: 60px;
+}
+.img-lazy-wrapper img {
+    opacity: 0;
+}
+.img-lazy-wrapper.loaded {
+    background: none;
+    animation: none;
+}
+.img-lazy-wrapper.loaded img {
+    opacity: 1;
+}
+@keyframes img-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+</style>
 {% endblock %}
 
 {% block page_title %}
@@ -37,7 +62,7 @@
         </a>
     {% endif %}
     {% if version.locked %}
-        {% if user.is_staff or user == version.project.owner or user in version.project.changelog_managers.all %}
+        {% if user.is_staff or user == version.project.owner or user in project.changelog_managers.all %}
             <a class="button is-light tooltip"
                data-tooltip="Unlock this version."
                onclick="$('#unlockModal').addClass('is-active')">
@@ -54,7 +79,7 @@
             </a>
         {% endif %}
     {% else %}
-        {% if user.is_staff or user == version.project.owner or user in version.project.changelog_managers.all %}
+        {% if user.is_staff or user == version.project.owner or user in project.changelog_managers.all %}
             <a class="button is-light tooltip"
                data-tooltip="Lock this version."
                onclick="$('#lockModal').addClass('is-active')">
