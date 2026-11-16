@@ -76,17 +76,13 @@ QEP_408_BLOCK = (
     'blob/master/qep-408-ai-tool-policy.md) for details.**\n'
 )
 
-BODY_WITH_SECTION_AND_COMMENT = (
-    '## Description\n'
-    '\n'
-    'Adds a new expression function.\n'
-    '\n'
-    + AI_SECTION
-    + '\n'
-    + TEMPLATE_COMMENT
-    + '\n\n'
-    'Funded by Lyon https://lyon.example\n'
-)
+BODY_WITH_SECTION_AND_COMMENT = ''.join((
+    '## Description\n\nAdds a new expression function.\n\n',
+    AI_SECTION,
+    '\n',
+    TEMPLATE_COMMENT,
+    '\n\nFunded by Lyon https://lyon.example\n',
+))
 
 
 class TestStripPrBoilerplate(unittest.TestCase):
@@ -115,16 +111,13 @@ class TestStripPrBoilerplate(unittest.TestCase):
             strip_pr_boilerplate(body), 'Adds snapping to the ruler.')
 
     def test_certify_and_qep_408_variant(self):
-        body = (
-            '## Description\n'
-            '\n'
-            'Fixes the legend.\n'
-            '\n'
-            + QEP_408_BLOCK
-            + '\n'
-            + TEMPLATE_COMMENT
-            + '\n'
-        )
+        body = ''.join((
+            '## Description\n\nFixes the legend.\n\n',
+            QEP_408_BLOCK,
+            '\n',
+            TEMPLATE_COMMENT,
+            '\n',
+        ))
         self.assertEqual(
             strip_pr_boilerplate(body),
             '## Description\n\nFixes the legend.'
@@ -205,13 +198,12 @@ class TestStripPrBoilerplate(unittest.TestCase):
         )
 
     def test_removes_every_template_comment_only(self):
-        body = (
-            'Adds a ruler tool.\n'
-            '\n'
-            + TEMPLATE_COMMENT
-            + '\n\n<!-- reviewer note -->\n\n'
-            + TEMPLATE_COMMENT
-        )
+        body = ''.join((
+            'Adds a ruler tool.\n\n',
+            TEMPLATE_COMMENT,
+            '\n\n<!-- reviewer note -->\n\n',
+            TEMPLATE_COMMENT,
+        ))
         self.assertEqual(
             strip_pr_boilerplate(body),
             'Adds a ruler tool.\n\n<!-- reviewer note -->'
