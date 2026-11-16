@@ -7,6 +7,7 @@ from crispy_forms.layout import HTML, Div
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
+from django.utils import translation
 
 from base.tests.model_factories import ProjectF
 from changes.forms import ENTRY_FORM_TABS, ENTRY_PREVIEW_PANEL, EntryForm
@@ -19,6 +20,8 @@ class EntryFormTestCase(TestCase):
     """A version with one entry, and a staff user who can edit it."""
 
     def setUp(self) -> None:
+        # With no active language, reverse() builds /en-us/ URLs that 404.
+        translation.activate('en')
         self.client = Client()
         logging.disable(logging.CRITICAL)
         self.project = ProjectF.create()
@@ -35,6 +38,7 @@ class EntryFormTestCase(TestCase):
 
     def tearDown(self) -> None:
         logging.disable(logging.NOTSET)
+        translation.deactivate()
 
     def create_url(self) -> str:
         return reverse(
