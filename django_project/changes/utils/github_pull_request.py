@@ -1,6 +1,67 @@
 """ Tools for parsing the GitHub pull request. """
 
 import re
+from typing import Optional
+
+_NEXT_HEADING = r'^[ \t]{0,3}#{1,6}[ \t]'
+
+_AI_USAGE_SECTION = re.compile(
+    r'^[ \t]{0,3}#{1,6}[ \t]*AI tool usage[ \t#]*$'
+    r'.*?(?=<!--|' + _NEXT_HEADING + r'|\Z)',
+    re.IGNORECASE | re.MULTILINE | re.DOTALL,
+)
+
+# The bold QEP 408 paragraph is optional and may not cross a blank line.
+_AI_CERTIFY_BLOCK = re.compile(
+    r'^[ \t]*(?:[-*+][ \t]+)?\[[ \t]*x?[ \t]*\][ \t]*'
+    r'I certify that no AI tool[^\n]*'
+    r'(?:\n(?:[ \t]*\n)*[ \t]*\*\*(?:(?!\n[ \t]*\n).)*?'
+    r'See \[QEP 408\]\([^)\n]*\) for details\.\*\*)?',
+    re.IGNORECASE | re.MULTILINE | re.DOTALL,
+)
+
+_DESCRIPTION_HEADING = re.compile(
+    r'^[ \t]{0,3}#{1,6}[ \t]*Description[ \t]*:?[ \t]*#*[ \t]*'
+    r'(?:\n(?:[ \t]*\n)?|\Z)',
+    re.IGNORECASE | re.MULTILINE,
+)
+
+_HTML_COMMENT = re.compile(r'<!--.*?-->', re.DOTALL)
+
+_TEMPLATE_MARKERS = (
+    'BEFORE HITTING SUBMIT',
+    'IMPORTANT NOTES FOR FIRST TIME CONTRIBUTORS',
+)
+
+
+def _drop_template_comment(match: re.Match) -> str:
+    comment = match.group(0)
+    if any(marker in comment for marker in _TEMPLATE_MARKERS):
+        return ''
+    return comment
+
+
+def strip_pr_boilerplate(body: Optional[str]) -> Optional[str]:
+    """Remove the QGIS pull request template boilerplate from a PR body.
+
+    It removes the "Description" heading, the AI tool usage disclosure
+    (heading or certify variant) and the template HTML comment. A body
+    without any of them is returned unchanged, so running this twice gives
+    the same result.
+    """
+    if not body:
+        return body
+
+    text = body.replace('\r\n', '\n')
+    text, headings = _DESCRIPTION_HEADING.subn('', text)
+    text, ai_sections = _AI_USAGE_SECTION.subn('', text)
+    text, certify_blocks = _AI_CERTIFY_BLOCK.subn('', text)
+    cleaned = _HTML_COMMENT.sub(_drop_template_comment, text)
+    if not (headings or ai_sections or certify_blocks or cleaned != text):
+        return body
+
+    cleaned = re.sub(r'\n(?:[ \t]*\n){2,}', '\n\n', cleaned)
+    return cleaned.strip()
 
 
 def parse_funded_by(content: str) -> tuple:
