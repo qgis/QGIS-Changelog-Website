@@ -11,7 +11,10 @@ from django.test.client import Client
 from django.urls import reverse
 
 from base.tests.model_factories import ProjectF
-from changes.utils.github_pull_request import parse_funded_by
+from changes.utils.github_pull_request import (
+    parse_funded_by,
+    strip_pr_boilerplate,
+)
 from changes.tests.model_factories import (
     CategoryF,
     EntryF,
@@ -38,6 +41,181 @@ def mocked_request_get_github(*args, **kwargs):
         }, 200)
 
     return MockResponse(None, 404)
+
+
+TEMPLATE_COMMENT = (
+    '<!--\n'
+    '  BEFORE HITTING SUBMIT -- Please BUILD AND TEST your changes.\n'
+    '\n'
+    '  IMPORTANT NOTES FOR FIRST TIME CONTRIBUTORS\n'
+    '  ===========================================\n'
+    '\n'
+    '------------------------\n'
+    '-->'
+)
+
+AI_SECTION = (
+    '## AI tool usage\n'
+    '\n'
+    '- [x] I used an AI tool to write the tests.\n'
+    'It suggested the fixture names.\n'
+)
+
+QEP_408_BLOCK = (
+    '- [ ] I certify that no AI tool(s) (Copilot, Claude, or something '
+    'similar), LLMs, or agent based workflows were used or supported my '
+    'development of this PR. See our [policy about AI tool use]'
+    '(https://github.com/qgis/QGIS-Enhancement-Proposals/blob/master/'
+    'qep-408-ai-tool-policy.md).\n'
+    '\n'
+    '**No LLM, AI or agent assisted code contributions are allowed in the '
+    'QGIS repository. If we subsequently discover that you have used an '
+    'AI, LLM, or any agent-based workflow for your contribution, you will '
+    'be subject to code reversion and contributor rights sanctioning. '
+    'See [QEP 408](https://github.com/qgis/QGIS-Enhancement-Proposals/'
+    'blob/master/qep-408-ai-tool-policy.md) for details.**\n'
+)
+
+BODY_WITH_SECTION_AND_COMMENT = (
+    '## Description\n'
+    '\n'
+    'Adds a new expression function.\n'
+    '\n'
+    + AI_SECTION
+    + '\n'
+    + TEMPLATE_COMMENT
+    + '\n\n'
+    'Funded by Lyon https://lyon.example\n'
+)
+
+
+class TestStripPrBoilerplate(unittest.TestCase):
+    """Tests for removing the PR template boilerplate."""
+
+    def test_section_followed_by_template_comment(self):
+        self.assertEqual(
+            strip_pr_boilerplate(BODY_WITH_SECTION_AND_COMMENT),
+            '## Description\n'
+            '\n'
+            'Adds a new expression function.\n'
+            '\n'
+            'Funded by Lyon https://lyon.example'
+        )
+
+    def test_section_at_end_of_text(self):
+        body = (
+            'Adds snapping to the ruler.\n'
+            '\n'
+            '## ai TOOL usage\n'
+            '\n'
+            '- [X ] I used an AI tool.\n'
+            'Some free text.\n'
+        )
+        self.assertEqual(
+            strip_pr_boilerplate(body), 'Adds snapping to the ruler.')
+
+    def test_certify_and_qep_408_variant(self):
+        body = (
+            '## Description\n'
+            '\n'
+            'Fixes the legend.\n'
+            '\n'
+            + QEP_408_BLOCK
+            + '\n'
+            + TEMPLATE_COMMENT
+            + '\n'
+        )
+        self.assertEqual(
+            strip_pr_boilerplate(body),
+            '## Description\n\nFixes the legend.'
+        )
+
+    def test_bare_certify_line_checkbox_spellings(self):
+        for checkbox in ('[x]', '[X ]', '[ ]', '[ x ]', '- [X]'):
+            with self.subTest(checkbox=checkbox):
+                body = (
+                    'Fixes the legend.\n'
+                    '\n'
+                    f'{checkbox} I certify that no AI tool(s) were used.\n'
+                )
+                self.assertEqual(
+                    strip_pr_boilerplate(body), 'Fixes the legend.')
+
+    def test_body_without_boilerplate_is_unchanged(self):
+        body = (
+            'Adds a button.\n'
+            '\n'
+            '<!-- reviewer note -->\n'
+            '\n'
+            '\n'
+            '\n'
+            '![button](https://example.com/button.png)  \n'
+        )
+        self.assertEqual(strip_pr_boilerplate(body), body)
+
+    def test_empty_body_is_unchanged(self):
+        self.assertIsNone(strip_pr_boilerplate(None))
+        self.assertEqual(strip_pr_boilerplate(''), '')
+
+    def test_crlf_input(self):
+        body = BODY_WITH_SECTION_AND_COMMENT.replace('\n', '\r\n')
+        self.assertEqual(
+            strip_pr_boilerplate(body),
+            '## Description\n'
+            '\n'
+            'Adds a new expression function.\n'
+            '\n'
+            'Funded by Lyon https://lyon.example'
+        )
+
+    def test_running_twice_gives_the_same_result(self):
+        bodies = (
+            BODY_WITH_SECTION_AND_COMMENT,
+            BODY_WITH_SECTION_AND_COMMENT.replace('\n', '\r\n'),
+            'Fixes the legend.\n\n' + QEP_408_BLOCK,
+            'Adds a button.\n\n\n\n',
+        )
+        for body in bodies:
+            with self.subTest(body=body):
+                once = strip_pr_boilerplate(body)
+                self.assertEqual(strip_pr_boilerplate(once), once)
+
+    def test_description_heading_before_section_survives(self):
+        body = (
+            '## Description\n'
+            '\n'
+            'Adds a ruler tool.\n'
+            '\n'
+            '## AI tool usage\n'
+            '- [ ] I used an AI tool.\n'
+            '\n'
+            '## Screenshots\n'
+            '\n'
+            '![ruler](https://example.com/ruler.png)\n'
+        )
+        self.assertEqual(
+            strip_pr_boilerplate(body),
+            '## Description\n'
+            '\n'
+            'Adds a ruler tool.\n'
+            '\n'
+            '## Screenshots\n'
+            '\n'
+            '![ruler](https://example.com/ruler.png)'
+        )
+
+    def test_removes_every_template_comment_only(self):
+        body = (
+            'Adds a ruler tool.\n'
+            '\n'
+            + TEMPLATE_COMMENT
+            + '\n\n<!-- reviewer note -->\n\n'
+            + TEMPLATE_COMMENT
+        )
+        self.assertEqual(
+            strip_pr_boilerplate(body),
+            'Adds a ruler tool.\n\n<!-- reviewer note -->'
+        )
 
 
 class TestGithubPullRequest(unittest.TestCase):
@@ -212,6 +390,29 @@ class TestGithubPullRequest(unittest.TestCase):
         self.assertEqual(len(self.entry_created), 1)
         self.assertEqual(
             self.entry_created[0].developer_url, 'https://github.com/qgis')
+
+    @override_settings(VALID_DOMAIN=['testserver', ])
+    @mock.patch('requests.get', side_effect=mocked_request_get_github)
+    def test_create_entry_strips_pr_boilerplate(self, mock_request):
+        pr_url = 'https://github.com/qgis/QGIS/pull/60001'
+        create_entry_from_github_pr(
+            self.version,
+            self.category,
+            [{
+                'body': BODY_WITH_SECTION_AND_COMMENT,
+                'html_url': pr_url,
+                'title': 'Add an expression function',
+                'user': {'url': 'https://api.github.com/users/qgis'},
+            }],
+            self.user
+        )
+
+        entry = Entry.objects.get(github_PR_url=pr_url)
+        self.assertEqual(
+            entry.description,
+            '## Description\n\nAdds a new expression function.')
+        self.assertEqual(entry.funded_by, 'Lyon')
+        self.assertEqual(entry.funder_url, 'https://lyon.example')
 
 
 class TestGithubDownloadImage(TestCase):

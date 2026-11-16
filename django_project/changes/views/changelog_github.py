@@ -19,7 +19,10 @@ from base.models.project import Project
 from changes.models.category import Category
 from changes.models.entry import Entry
 from changes.models.version import Version
-from changes.utils.github_pull_request import parse_funded_by
+from changes.utils.github_pull_request import (
+    parse_funded_by,
+    strip_pr_boilerplate,
+)
 
 try:
     from core.settings.secret import GIT_TOKEN
@@ -51,7 +54,8 @@ def create_entry_from_github_pr(version, category, data, user):
             if not name:
                 name = response.json()['login']
 
-        content, funded_by, funded_by_url = parse_funded_by(item['body'])
+        content, funded_by, funded_by_url = parse_funded_by(
+            strip_pr_boilerplate(item['body']))
 
         if item['html_url'] not in existing_entries:
             # Create new entry from data.
