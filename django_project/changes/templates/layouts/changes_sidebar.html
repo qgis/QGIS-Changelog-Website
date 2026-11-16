@@ -46,16 +46,25 @@
             <img src="{% static "images/arrow.svg" %}"/>
           </span>
         </div>
-        <ul id="categories" class="collapsed unfolded">
-          {% for row in version.categories %} 
-            {% if row.entries %}
-              <li class="has-child" data-category-id="{{ row.category.id }}">
-              <a href="#category-{{ row.category.id }}"> 
-                {{ row.category.name }} 
+        <ul id="categories" class="collapsed">
+          <li{% if not selected_category %} class="is-active"{% endif %}>
+            <a href="{{ version_detail_url }}"
+               class="is-flex is-justify-content-space-between is-align-items-center"
+               {% if not selected_category %}aria-current="page"{% endif %}>
+              <span>All categories</span>
+              <span class="tag">{{ entry_total }}</span>
+            </a>
+          </li>
+          {% for row in category_rows %}
+            <li{% if row.category == selected_category %} class="is-active"{% endif %}>
+              <a href="{{ version_detail_url }}?category={{ row.category.slug|urlencode }}"
+                 class="is-flex is-justify-content-space-between is-align-items-center"
+                 {% if row.category == selected_category %}aria-current="page"{% endif %}>
+                <span>{{ row.category.name }}</span>
+                <span class="tag">{{ row.entries|length }}</span>
               </a>
             </li>
-            {% endif %}
-            {% endfor %}
+          {% endfor %}
         </ul>
       </li>
     {% endif %}
@@ -85,19 +94,4 @@
       e.classList.toggle('unfolded');
     }
   });
-  // Add is-active class to the element with class has-child if its id matches the URL fragment
-  $(window).on('hashchange', function() {
-    let hash = window.location.hash.substring(1); // Remove the '#' from the hash
-    $('.has-child').each(function() {
-      let category = "category-" + $(this).data('category-id');
-      if (category === hash) {
-        $(this).addClass('is-active');
-      } else {
-        $(this).removeClass('is-active');
-      }
-    });
-  });
-
-  // Trigger the hashchange event on page load to handle the initial URL fragment
-  $(window).trigger('hashchange');
 </script>

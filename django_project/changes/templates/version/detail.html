@@ -39,7 +39,11 @@
 {% endblock %}
 
 {% block page_title %}
-    <h1>Entries (all)</h1>
+    {% if selected_category %}
+        <h1>Entries in {{ selected_category.name }}</h1>
+    {% else %}
+        <h1>Entries (all)</h1>
+    {% endif %}
 {% endblock page_title %}
 
 {% block content %}
