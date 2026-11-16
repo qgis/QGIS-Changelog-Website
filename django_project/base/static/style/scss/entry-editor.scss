@@ -1,0 +1,31 @@
+#entry-form {
+  .tabs a.is-active {
+    color: $text-primary1;
+  }
+
+  .editor-toolbar,
+  .EasyMDEContainer .CodeMirror {
+    border-color: $grey-light;
+  }
+
+  .EasyMDEContainer .CodeMirror {
+    color: $text-primary2;
+  }
+
+  .EasyMDEContainer .CodeMirror-focused {
+    border-color: $link;
+    box-shadow: 0 0 0 0.125em rgba($link, 0.25);
+  }
+
+  .cm-s-easymde {
+    .cm-link,
+    .cm-tag {
+      color: $primary3;
+    }
+
+    .cm-url,
+    .cm-quote {
+      color: $text-primary2;
+    }
+  }
+}

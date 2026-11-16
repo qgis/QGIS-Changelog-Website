@@ -2,11 +2,12 @@
 """View classes for Entry."""
 
 from base.models import Project
+from base.templatetags.custom_markup import is_gif
 # noinspection PyUnresolvedReferences
 import logging
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.urls import reverse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import (
     ListView,
     CreateView,
@@ -27,11 +28,60 @@ __date__ = ''
 __license__ = ''
 __copyright__ = ''
 
+PREVIEW_FIELD = 'preview'
+PREVIEW_IMAGE_FIELD = 'preview_image'
+PREVIEW_IMAGE_NAME = 'entry-preview-image'
+
 
 class EntryMixin(object):
     """Mixing for all views to inherit which sets some standard properties."""
     model = Entry  # implies -> queryset = Entry.objects.all()
     form_class = EntryForm
+
+
+class EntryPreviewMixin(object):
+    """Answer the entry form's Preview tab without saving anything.
+
+    The Preview tab posts the form with a ``preview`` field. The view
+    renders the posted entry with the template the version page uses, so
+    the preview shows exactly what will be published. The picked image
+    stays in the browser: only its name is posted, and the page swaps
+    the placeholder image for the local file.
+    """
+
+    def is_preview(self) -> bool:
+        """Tell whether the form was posted by the Preview tab.
+
+        :returns: True when the request asks for a preview.
+        """
+        return PREVIEW_FIELD in self.request.POST
+
+    def form_valid(self, form: EntryForm) -> HttpResponse:
+        if self.is_preview():
+            return self.render_preview(form)
+        return super().form_valid(form)
+
+    def form_invalid(self, form: EntryForm) -> HttpResponse:
+        if self.is_preview():
+            return self.render_preview(form)
+        return super().form_invalid(form)
+
+    def render_preview(self, form: EntryForm) -> HttpResponse:
+        """Render the unsaved entry as the version page shows it.
+
+        :param form: The bound entry form. Invalid fields keep their
+            saved value, or stay empty on a new entry.
+        :returns: The entry markup, without the edit buttons.
+        """
+        entry = form.instance
+        picked_image = self.request.POST.get(PREVIEW_IMAGE_FIELD)
+        if picked_image:
+            suffix = '.gif' if is_gif(picked_image) else ''
+            entry.image_file = PREVIEW_IMAGE_NAME + suffix
+        return render(
+            self.request,
+            'entry/includes/entry_detail.html',
+            {'entry': entry, 'preview': True})
 
 
 class EntryDetailView(EntryMixin, DetailView):
@@ -85,7 +135,8 @@ class EntryDeleteView(LoginRequiredMixin, DeleteView):
 
 
 # noinspection PyAttributeOutsideInit
-class EntryCreateView(LoginRequiredMixin, EntryMixin, CreateView):
+class EntryCreateView(
+        LoginRequiredMixin, EntryMixin, EntryPreviewMixin, CreateView):
     """Create view for Entry."""
     context_object_name = 'entry'
     template_name = 'entry/create.html'
@@ -123,7 +174,8 @@ class EntryCreateView(LoginRequiredMixin, EntryMixin, CreateView):
 
 
 # noinspection PyAttributeOutsideInit
-class EntryUpdateView(LoginRequiredMixin, EntryMixin, UpdateView):
+class EntryUpdateView(
+        LoginRequiredMixin, EntryMixin, EntryPreviewMixin, UpdateView):
     """Update view for Entry."""
     context_object_name = 'entry'
     template_name = 'entry/update.html'
