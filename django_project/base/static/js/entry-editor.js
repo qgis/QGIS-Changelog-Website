@@ -32,6 +32,7 @@ function createEditor(textarea) {
     nativeSpellcheck: true,
     autoDownloadFontAwesome: false,
     status: false,
+    maxHeight: '400px',
     toolbar: TOOLBAR,
     shortcuts: {
       togglePreview: null,
