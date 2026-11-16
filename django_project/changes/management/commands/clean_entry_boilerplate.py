@@ -12,7 +12,10 @@ from changes.utils.github_pull_request import strip_pr_boilerplate
 
 
 class Command(BaseCommand):
-    """Remove the AI tool usage block and the template comment from entries.
+    """Remove the PR template text from entries.
+
+    That is the Description heading, the AI tool usage block and the
+    template comment.
 
     It only reports by default. Pass --apply to save the changes.
     """

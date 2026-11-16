@@ -26,6 +26,11 @@ class CleanEntryBoilerplateTest(TestCase):
             category=self.category,
             version=self.version,
         )
+        self.heading_only = EntryF.create(
+            description='## Description\r\n\r\nAdds a north arrow.',
+            category=self.category,
+            version=self.version,
+        )
         self.clean = EntryF.create(
             description='Adds a scale bar.',
             category=self.category,
@@ -46,18 +51,22 @@ class CleanEntryBoilerplateTest(TestCase):
         for args in ((), ('--dry-run',)):
             with self.subTest(args=args):
                 output = self.run_command(*args)
-                self.assertIn('2 entries would change.', output)
+                self.assertIn('3 entries would change.', output)
                 self.assertIn(self.dirty.title, output)
+                self.assertIn(self.heading_only.title, output)
                 self.assertNotIn(self.clean.title, output)
                 self.dirty.refresh_from_db()
                 self.assertEqual(self.dirty.description, DIRTY_DESCRIPTION)
 
     def test_apply_saves_cleaned_descriptions(self):
         output = self.run_command('--apply')
-        self.assertIn('2 entries changed.', output)
+        self.assertIn('3 entries changed.', output)
         self.dirty.refresh_from_db()
+        self.heading_only.refresh_from_db()
         self.clean.refresh_from_db()
         self.assertEqual(self.dirty.description, 'Adds a ruler tool.')
+        self.assertEqual(
+            self.heading_only.description, 'Adds a north arrow.')
         self.assertEqual(self.clean.description, 'Adds a scale bar.')
 
         self.assertIn('0 entries would change.', self.run_command())

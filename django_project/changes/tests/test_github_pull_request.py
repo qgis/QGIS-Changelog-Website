@@ -91,8 +91,6 @@ class TestStripPrBoilerplate(unittest.TestCase):
     def test_section_followed_by_template_comment(self):
         self.assertEqual(
             strip_pr_boilerplate(BODY_WITH_SECTION_AND_COMMENT),
-            '## Description\n'
-            '\n'
             'Adds a new expression function.\n'
             '\n'
             'Funded by Lyon https://lyon.example'
@@ -118,10 +116,7 @@ class TestStripPrBoilerplate(unittest.TestCase):
             TEMPLATE_COMMENT,
             '\n',
         ))
-        self.assertEqual(
-            strip_pr_boilerplate(body),
-            '## Description\n\nFixes the legend.'
-        )
+        self.assertEqual(strip_pr_boilerplate(body), 'Fixes the legend.')
 
     def test_bare_certify_line_checkbox_spellings(self):
         for checkbox in ('[x]', '[X ]', '[ ]', '[ x ]', '- [X]'):
@@ -154,8 +149,6 @@ class TestStripPrBoilerplate(unittest.TestCase):
         body = BODY_WITH_SECTION_AND_COMMENT.replace('\n', '\r\n')
         self.assertEqual(
             strip_pr_boilerplate(body),
-            '## Description\n'
-            '\n'
             'Adds a new expression function.\n'
             '\n'
             'Funded by Lyon https://lyon.example'
@@ -167,13 +160,15 @@ class TestStripPrBoilerplate(unittest.TestCase):
             BODY_WITH_SECTION_AND_COMMENT.replace('\n', '\r\n'),
             'Fixes the legend.\n\n' + QEP_408_BLOCK,
             'Adds a button.\n\n\n\n',
+            '## Description\n\n## Description\n\nAdds a ruler tool.',
+            'Fixes #123.\r\n\r\n# Description:\r\n\r\nAdds a ruler tool.',
         )
         for body in bodies:
             with self.subTest(body=body):
                 once = strip_pr_boilerplate(body)
                 self.assertEqual(strip_pr_boilerplate(once), once)
 
-    def test_description_heading_before_section_survives(self):
+    def test_heading_after_section_survives(self):
         body = (
             '## Description\n'
             '\n'
@@ -188,8 +183,6 @@ class TestStripPrBoilerplate(unittest.TestCase):
         )
         self.assertEqual(
             strip_pr_boilerplate(body),
-            '## Description\n'
-            '\n'
             'Adds a ruler tool.\n'
             '\n'
             '## Screenshots\n'
@@ -208,6 +201,59 @@ class TestStripPrBoilerplate(unittest.TestCase):
             strip_pr_boilerplate(body),
             'Adds a ruler tool.\n\n<!-- reviewer note -->'
         )
+
+    def test_description_heading_as_first_line(self):
+        body = (
+            '## Description\n'
+            '\n'
+            'Adds a ruler tool.\n'
+            '\n'
+            '### Units\n'
+            '\n'
+            '![ruler](https://example.com/ruler.png)\n'
+        )
+        self.assertEqual(
+            strip_pr_boilerplate(body),
+            'Adds a ruler tool.\n'
+            '\n'
+            '### Units\n'
+            '\n'
+            '![ruler](https://example.com/ruler.png)'
+        )
+
+    def test_description_heading_after_other_text(self):
+        body = 'Fixes #123.\n\n# description\n\nAdds a ruler tool.\n'
+        self.assertEqual(
+            strip_pr_boilerplate(body), 'Fixes #123.\n\nAdds a ruler tool.')
+
+    def test_description_heading_with_crlf(self):
+        body = '## Description\r\n\r\nAdds a ruler tool.\r\nIn metres.\r\n'
+        self.assertEqual(
+            strip_pr_boilerplate(body), 'Adds a ruler tool.\nIn metres.')
+
+    def test_description_heading_spellings(self):
+        for heading in (
+            '## Description:',
+            '### DESCRIPTION ###',
+            '###### description :',
+            '#Description',
+        ):
+            with self.subTest(heading=heading):
+                body = f'{heading}\n\nAdds a ruler tool.'
+                self.assertEqual(
+                    strip_pr_boilerplate(body), 'Adds a ruler tool.')
+
+    def test_longer_description_headings_survive(self):
+        body = (
+            '## Description of changes\n'
+            '\n'
+            'Adds a ruler tool.\n'
+            '\n'
+            '## Implementation detail\n'
+            '\n'
+            'It uses QgsDistanceArea.\n'
+        )
+        self.assertEqual(strip_pr_boilerplate(body), body)
 
 
 class TestGithubPullRequest(unittest.TestCase):
@@ -401,8 +447,7 @@ class TestGithubPullRequest(unittest.TestCase):
 
         entry = Entry.objects.get(github_PR_url=pr_url)
         self.assertEqual(
-            entry.description,
-            '## Description\n\nAdds a new expression function.')
+            entry.description, 'Adds a new expression function.')
         self.assertEqual(entry.funded_by, 'Lyon')
         self.assertEqual(entry.funder_url, 'https://lyon.example')
 

@@ -20,6 +20,12 @@ _AI_CERTIFY_BLOCK = re.compile(
     re.IGNORECASE | re.MULTILINE | re.DOTALL,
 )
 
+_DESCRIPTION_HEADING = re.compile(
+    r'^[ \t]{0,3}#{1,6}[ \t]*Description[ \t]*:?[ \t]*#*[ \t]*'
+    r'(?:\n(?:[ \t]*\n)?|\Z)',
+    re.IGNORECASE | re.MULTILINE,
+)
+
 _HTML_COMMENT = re.compile(r'<!--.*?-->', re.DOTALL)
 
 _TEMPLATE_MARKERS = (
@@ -38,18 +44,20 @@ def _drop_template_comment(match: re.Match) -> str:
 def strip_pr_boilerplate(body: Optional[str]) -> Optional[str]:
     """Remove the QGIS pull request template boilerplate from a PR body.
 
-    It removes the AI tool usage disclosure (heading or certify variant)
-    and the template HTML comment. A body without any of them is returned
-    unchanged, so running this twice gives the same result.
+    It removes the "Description" heading, the AI tool usage disclosure
+    (heading or certify variant) and the template HTML comment. A body
+    without any of them is returned unchanged, so running this twice gives
+    the same result.
     """
     if not body:
         return body
 
     text = body.replace('\r\n', '\n')
+    text, headings = _DESCRIPTION_HEADING.subn('', text)
     text, ai_sections = _AI_USAGE_SECTION.subn('', text)
     text, certify_blocks = _AI_CERTIFY_BLOCK.subn('', text)
     cleaned = _HTML_COMMENT.sub(_drop_template_comment, text)
-    if not (ai_sections or certify_blocks or cleaned != text):
+    if not (headings or ai_sections or certify_blocks or cleaned != text):
         return body
 
     cleaned = re.sub(r'\n(?:[ \t]*\n){2,}', '\n\n', cleaned)
