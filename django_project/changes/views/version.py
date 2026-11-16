@@ -178,7 +178,7 @@ class VersionDetailView(VersionMixin, DetailView):
 
         context['sponsors'] = sponsors
 
-        category_rows = versions.categories()
+        category_rows = versions.categories
         selected_slug = self.request.GET.get('category')
         selected_row = None
         if selected_slug:
