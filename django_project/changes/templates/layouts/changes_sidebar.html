@@ -57,7 +57,7 @@
           </li>
           {% for row in category_rows %}
             <li{% if row.category == selected_category %} class="is-active"{% endif %}>
-              <a href="{{ version_detail_url }}?category={{ row.category.slug|urlencode }}"
+              <a href="{{ version_detail_url }}?category={{ row.category.slug|urlencode }}#category-{{ row.category.id }}"
                  class="is-flex is-justify-content-space-between is-align-items-center"
                  {% if row.category == selected_category %}aria-current="page"{% endif %}>
                 <span>{{ row.category.name }}</span>

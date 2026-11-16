@@ -64,10 +64,14 @@ class TestVersionCategorySidebar(TestCase):
         self.assertContains(response, '<span class="tag">2</span>')
         self.assertContains(response, '<span class="tag">3</span>')
 
-    def test_sidebar_links_filter_by_category_slug(self) -> None:
+    def test_sidebar_links_land_on_the_category_section(self) -> None:
         response = self.get_detail()
         self.assertContains(
-            response, '?category=%s' % self.symbology.slug)
+            response, '?category=%s#category-%s' % (
+                self.symbology.slug, self.symbology.id))
+        filtered = self.get_detail('?category=%s' % self.symbology.slug)
+        self.assertContains(
+            filtered, 'id="category-%s"' % self.symbology.id, count=1)
 
     def test_category_query_shows_only_that_category(self) -> None:
         response = self.get_detail('?category=%s' % self.symbology.slug)
