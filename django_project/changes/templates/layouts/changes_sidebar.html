@@ -34,7 +34,7 @@
     </li>
 
     {% if version %}
-    {% url 'version-detail' version.name as version_detail_url %}
+    {% url 'version-detail' version.slug as version_detail_url %}
     {% if request.path == version_detail_url %}
       <li>
         <div class="has-child">
