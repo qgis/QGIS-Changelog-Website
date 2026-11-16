@@ -67,6 +67,9 @@ class TestEntryFormTabs(EntryFormTestCase):
         self.assertIn('role="tablist"', ENTRY_FORM_TABS)
         self.assertIn('aria-controls="entry-write-panel"', ENTRY_FORM_TABS)
         self.assertIn('aria-controls="entry-preview-panel"', ENTRY_FORM_TABS)
+        self.assertIn('<span>Write</span>', ENTRY_FORM_TABS)
+        self.assertIn('<span>Preview</span>', ENTRY_FORM_TABS)
+        self.assertEqual(ENTRY_FORM_TABS.count('aria-hidden="true"'), 2)
         self.assertIn('is-hidden', ENTRY_FORM_TABS)
         self.assertIn('is-hidden', ENTRY_PREVIEW_PANEL)
 

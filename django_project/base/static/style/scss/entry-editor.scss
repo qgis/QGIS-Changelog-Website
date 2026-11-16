@@ -1,6 +1,11 @@
 #entry-form {
   .tabs a.is-active {
     color: darken($link, 5%);
+
+    // Cancels the navbar underline that style.scss puts on active links.
+    > span {
+      border-bottom: 0;
+    }
   }
 
   .editor-toolbar,
