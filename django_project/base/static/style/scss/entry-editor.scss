@@ -1,6 +1,6 @@
 #entry-form {
   .tabs a.is-active {
-    color: $text-primary1;
+    color: darken($link, 5%);
   }
 
   .editor-toolbar,
