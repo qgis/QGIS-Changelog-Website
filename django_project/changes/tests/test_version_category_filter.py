@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.test.client import Client
 from django.urls import reverse
+from django.utils import translation
 
 from base.tests.model_factories import ProjectF
 from changes.models import Version
@@ -18,6 +19,8 @@ class TestVersionCategorySidebar(TestCase):
     """The sidebar lists, counts and filters a version's categories."""
 
     def setUp(self) -> None:
+        # With no active language, reverse() builds /en-us/ URLs that 404.
+        translation.activate('en')
         self.client = Client()
         logging.disable(logging.CRITICAL)
         self.project = ProjectF.create()
@@ -40,6 +43,7 @@ class TestVersionCategorySidebar(TestCase):
 
     def tearDown(self) -> None:
         logging.disable(logging.NOTSET)
+        translation.deactivate()
 
     def get_detail(self, query: str = '') -> HttpResponse:
         url = reverse('version-detail', kwargs={'slug': 'bratislava'})
