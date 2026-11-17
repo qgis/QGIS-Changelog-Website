@@ -1,11 +1,14 @@
 {% extends "base_with_sidebar.html" %}
 
 {% load crispy_forms_tags %}
+{% load render_bundle from webpack_loader %}
 
 {% block extra_head %}
     {{ Other }}
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.formset.min.js"></script>
     {{  floppyforms }}
+    {% render_bundle 'entry_editor' 'css' %}
+    {% render_bundle 'entry_editor' 'js' attrs='defer' %}
 
 {% endblock %}
 

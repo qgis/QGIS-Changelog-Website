@@ -8,6 +8,7 @@ from crispy_forms.layout import (
     Fieldset,
     Field,
     HTML,
+    Div,
 )
 from .models import (
     Category,
@@ -17,6 +18,36 @@ from .models import (
 from crispy_bulma.widgets import FileUploadInput
 
 FileUploadInput.template_name = 'widgets/file_upload_input.html'
+
+ENTRY_FORM_TABS = (
+    '<div class="tabs is-boxed is-hidden" data-entry-tabs>'
+    '<ul class="ml-0 mt-0" role="tablist" aria-label="Entry form">'
+    '<li>'
+    '<a class="is-active" role="tab" id="entry-tab-write"'
+    ' aria-controls="entry-write-panel" aria-selected="true" tabindex="0">'
+    '<span class="icon is-small">'
+    '<i class="fas fa-pen" aria-hidden="true"></i>'
+    '</span>'
+    '<span>Write</span>'
+    '</a>'
+    '</li>'
+    '<li>'
+    '<a role="tab" id="entry-tab-preview"'
+    ' aria-controls="entry-preview-panel" aria-selected="false"'
+    ' tabindex="-1">'
+    '<span class="icon is-small">'
+    '<i class="fas fa-eye" aria-hidden="true"></i>'
+    '</span>'
+    '<span>Preview</span>'
+    '</a>'
+    '</li>'
+    '</ul>'
+    '</div>'
+)
+
+ENTRY_PREVIEW_PANEL = (
+    '<div id="entry-preview-panel" class="is-hidden"></div>'
+)
 
 
 class CategoryForm(forms.ModelForm):
@@ -174,17 +205,21 @@ class EntryForm(forms.ModelForm):
         layout = Layout(
             Fieldset(
                 form_title,
-                Field('category', css_class='form-control'),
-                Field('title', css_class='form-control'),
-                Field('description', css_class='form-control'),
-                Field('image_file', css_class='form-control'),
-                Field('image_credits', css_class='form-control'),
-                Field('video', css_class='form-control'),
-                Field('funded_by', css_class='form-control'),
-                Field('funder_url', css_class='form-control'),
-                Field('developed_by', css_class='form-control'),
-                Field('developer_url', css_class='form-control'),
-                Field('github_PR_url', css_class='form-control'),
+                HTML(ENTRY_FORM_TABS),
+                Div(
+                    Field('category', css_class='form-control'),
+                    Field('title', css_class='form-control'),
+                    Field('description', css_class='form-control'),
+                    Field('image_file', css_class='form-control'),
+                    Field('image_credits', css_class='form-control'),
+                    Field('video', css_class='form-control'),
+                    Field('funded_by', css_class='form-control'),
+                    Field('funder_url', css_class='form-control'),
+                    Field('developed_by', css_class='form-control'),
+                    Field('developer_url', css_class='form-control'),
+                    Field('github_PR_url', css_class='form-control'),
+                    css_id='entry-write-panel'),
+                HTML(ENTRY_PREVIEW_PANEL),
                 css_id='entry-form')
         )
         self.helper.layout = layout

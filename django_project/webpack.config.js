@@ -44,7 +44,10 @@ const exposeLibraries = [
 ];
 
 module.exports = {
-  entry: './base/static/js/index',
+  entry: {
+    main: './base/static/js/index',
+    entry_editor: './base/static/js/entry-editor',
+  },
   output: {
     path: path.resolve('./base/static/bundles'),
     filename: "[name].[contenthash].js",
