@@ -6,8 +6,8 @@ on:
         description: 'Git tag to use'
   push:
     tags:
-      - '*.*.*.'
-      - 'v*.*.*.'
+      - '*.*.*'
+      - 'v*.*.*'
 jobs:
   docker-builder-run-on-tag:
     runs-on: ubuntu-latest
