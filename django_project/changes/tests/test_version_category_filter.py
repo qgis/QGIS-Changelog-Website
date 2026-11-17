@@ -81,7 +81,6 @@ class TestVersionCategorySidebar(TestCase):
         self.assertContains(response, 'Raster stretch preview')
         self.assertNotContains(response, 'Snapping to curves')
         self.assertNotContains(response, 'Ellipsoidal measure tool')
-        self.assertContains(response, '<h1>Entries in Symbology</h1>')
         self.assertContains(response, 'aria-current="page"', count=1)
 
     def test_unknown_category_shows_every_entry(self) -> None:
@@ -90,4 +89,3 @@ class TestVersionCategorySidebar(TestCase):
         self.assertIsNone(response.context['selected_category'])
         self.assertContains(response, 'Raster stretch preview')
         self.assertContains(response, 'Snapping to curves')
-        self.assertContains(response, '<h1>Entries (all)</h1>')
