@@ -44,7 +44,7 @@
     <hr />
 {% endif %}
 
-{% for row in version.categories %}
+{% for row in shown_category_rows|default:version.categories %}
     {% if row.entries %}
         <div class="buttons is-pulled-right">
         {% if user.is_staff or user in project.changelog_managers.all and not rst_download %}

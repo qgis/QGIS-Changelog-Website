@@ -177,6 +177,23 @@ class VersionDetailView(VersionMixin, DetailView):
                 sponsors[sponsor.sponsorship_level].append(sponsor.sponsor)
 
         context['sponsors'] = sponsors
+
+        category_rows = versions.categories
+        selected_slug = self.request.GET.get('category')
+        selected_row = None
+        if selected_slug:
+            selected_row = next(
+                (row for row in category_rows
+                 if row['category'].slug == selected_slug),
+                None)
+        context['category_rows'] = category_rows
+        context['selected_category'] = (
+            selected_row['category'] if selected_row else None)
+        context['shown_category_rows'] = (
+            [selected_row] if selected_row else category_rows)
+        context['entry_total'] = sum(
+            len(row['entries']) for row in category_rows)
+
         context['user_can_edit'] = False
         context['user_can_delete'] = False
         project_slug = 'qgis'
