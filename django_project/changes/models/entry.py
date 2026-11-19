@@ -5,7 +5,6 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 import os
 import logging
-import re
 from core.settings.contrib import STOP_WORDS
 from django.conf.global_settings import MEDIA_ROOT
 from django.db import models
@@ -13,9 +12,6 @@ from embed_video.fields import EmbedVideoField
 from django.contrib.auth.models import User
 
 logger = logging.getLogger(__name__)
-
-GITHUB_PR_URL = re.compile(
-    r'^https://github\.com/[\w.-]+/[\w.-]+/pull/(\d+)(?:[/?#]\S*)?$')
 
 
 class Entry(models.Model):
@@ -174,12 +170,3 @@ class Entry(models.Model):
             return string
         else:
             return string
-
-    def github_pr_number(self) -> int | None:
-        """Return the pull request number from ``github_PR_url``.
-
-        :returns: The number when the URL is a GitHub pull request,
-            otherwise None.
-        """
-        match = GITHUB_PR_URL.match((self.github_PR_url or '').strip())
-        return int(match.group(1)) if match else None
