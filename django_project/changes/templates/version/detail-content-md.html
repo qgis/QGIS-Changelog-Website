@@ -16,11 +16,15 @@
 
 {% for row in version.categories %}
     {% if row.entries %}
+        <p>CHANGELOGCATEGORYSTART{{ row.category.pk }}</p>
         <h2 class="text-muted">
             {{ row.category.name }}
         </h2>
         {% for entry in row.entries %}
+            <p>CHANGELOGBOXSTART{{ entry.pk }}</p>
             {% include "entry/includes/entry_detail_rst.html" %}
+            <p>CHANGELOGBOXEND{{ entry.pk }}</p>
         {% endfor %}
+        <p>CHANGELOGCATEGORYEND{{ row.category.pk }}</p>
     {% endif %}
 {% endfor %}{# row loop #}

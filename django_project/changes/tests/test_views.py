@@ -13,6 +13,7 @@ from changes.tests.model_factories import (
     CategoryF,
     EntryF,
     VersionF)
+from changes.views.version import VersionDownloadMd
 from core.model_factories import UserF
 import logging
 
@@ -725,6 +726,59 @@ class TestVersionViews(TestCase):
             response.context.get('version'),
             version_same_name_from_other_project)
         self.assertEqual(response.status_code, 200)
+
+    def test_markdown_layout_shortcodes(self):
+        breaking = CategoryF.create(
+            project=self.project, name='Breaking Changes', sort_number=1)
+        fixes = CategoryF.create(
+            project=self.project, name='Notable Fixes', sort_number=2)
+        first = EntryF.create(
+            version=self.version, category=breaking,
+            github_PR_url='https://github.com/qgis/QGIS/pull/123')
+        second = EntryF.create(version=self.version, category=breaking)
+        fix = EntryF.create(version=self.version, category=fixes)
+        document = (
+            'Intro.\n\n'
+            f'CHANGELOGCATEGORYSTART{breaking.pk}\n\n'
+            '## Breaking Changes\n\n'
+            f'CHANGELOGBOXSTART{first.pk}\n\n'
+            '### Feature: One\n\n'
+            f'CHANGELOGBOXEND{first.pk}\n\n'
+            f'CHANGELOGBOXSTART{second.pk}\n\n'
+            '### Feature: Two\n\n'
+            f'CHANGELOGBOXEND{second.pk}\n\n'
+            f'CHANGELOGCATEGORYEND{breaking.pk}\n\n'
+            f'CHANGELOGCATEGORYSTART{fixes.pk}\n\n'
+            '## Notable Fixes\n\n'
+            f'CHANGELOGBOXSTART{fix.pk}\n\n'
+            '### Feature: Bug fixes\n\n'
+            f'CHANGELOGBOXEND{fix.pk}\n\n'
+            f'CHANGELOGCATEGORYEND{fixes.pk}\n'
+        )
+        expected = (
+            'Intro.\n\n'
+            '{{< changelog-filter >}}\n\n'
+            '{{< changelog-category-start id="category-breaking-changes" >}}\n\n'
+            '## Breaking Changes\n\n'
+            '{{< rich-box-start layoutClass="rounded" id="breaking-changes-1" githubLink="https://github.com/qgis/QGIS/pull/123" >}}\n\n'
+            '{{< rich-content-start themeClass="coloring-1" >}}\n\n'
+            '### Feature: One\n\n'
+            '{{< rich-content-end >}}\n'
+            '{{< rich-box-end >}}\n\n'
+            '{{< rich-box-start layoutClass="rounded" id="breaking-changes-2" >}}\n\n'
+            '{{< rich-content-start themeClass="coloring-1" >}}\n\n'
+            '### Feature: Two\n\n'
+            '{{< rich-content-end >}}\n'
+            '{{< rich-box-end >}}\n\n'
+            '{{< changelog-category-end >}}\n\n'
+            '{{< changelog-category-start id="category-notable-fixes" >}}\n\n'
+            '## Notable Fixes\n\n'
+            '### Feature: Bug fixes\n\n'
+            '{{< changelog-category-end >}}\n\n'
+        )
+        self.assertEqual(
+            VersionDownloadMd()._add_layout_shortcodes(document, self.version),
+            expected)
 
     @override_settings(VALID_DOMAIN=['testserver', ])
     @mock.patch('pypandoc.convert_text', side_effect=mocked_convert)

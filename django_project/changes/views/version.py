@@ -38,6 +38,17 @@ __date__ = ''
 __license__ = ''
 __copyright__ = ''
 
+NOTABLE_FIXES_SLUG = 'notable-fixes'
+HUGO_ID_INVALID_CHARS = re.compile(r'[^a-z0-9]+')
+LAYOUT_MARKER = re.compile(
+    r'^(CHANGELOG(?:CATEGORY|BOX)(?:START|END)\d+)$\n*', re.MULTILINE)
+
+
+def hugo_shortcode(name: str, **params: str) -> str:
+    """Return a Hugo shortcode tag such as ``{{< name key="value" >}}``."""
+    attrs = ''.join(f' {key}="{value}"' for key, value in params.items())
+    return f'{{{{< {name}{attrs} >}}}}'
+
 
 class VersionMixin(object):
 
@@ -779,6 +790,54 @@ class VersionDownloadMd(VersionMixin, DetailView):
 
         return markdown_content
 
+    def _add_layout_shortcodes(
+            self, document: str, version_obj: Version) -> str:
+        """Swap the template's layout markers for the website's shortcodes.
+
+        Each category gets a ``changelog-category`` wrapper and each entry a
+        rich box, except Notable Fixes entries, whose wide tables stay
+        unboxed. Their markers are dropped.
+
+        :param document: Markdown converted from the template.
+        :param version_obj: The Version the document was rendered from.
+        :returns: The Markdown with Hugo shortcodes in place of markers.
+        """
+        shortcodes: dict[str, str] = {}
+        for index, row in enumerate(version_obj.categories):
+            category = row['category']
+            slug = HUGO_ID_INVALID_CHARS.sub(
+                '-', category.name.lower()).strip('-')
+            start = hugo_shortcode(
+                'changelog-category-start', id=f'category-{slug}')
+            if index == 0:
+                start = f'{hugo_shortcode("changelog-filter")}\n\n{start}'
+            shortcodes[f'CHANGELOGCATEGORYSTART{category.pk}'] = start
+            shortcodes[f'CHANGELOGCATEGORYEND{category.pk}'] = (
+                hugo_shortcode('changelog-category-end'))
+            if category.slug == NOTABLE_FIXES_SLUG:
+                continue
+            content_start = hugo_shortcode(
+                'rich-content-start', themeClass='coloring-1')
+            box_end = (
+                f'{hugo_shortcode("rich-content-end")}\n'
+                f'{hugo_shortcode("rich-box-end")}')
+            for number, entry in enumerate(row['entries'], start=1):
+                params = {'layoutClass': 'rounded', 'id': f'{slug}-{number}'}
+                pr_url = (entry.github_PR_url or '').strip()
+                # A quote would end the attribute and break the Hugo build.
+                if entry.github_pr_number() is not None and '"' not in pr_url:
+                    params['githubLink'] = pr_url
+                box_start = hugo_shortcode('rich-box-start', **params)
+                shortcodes[f'CHANGELOGBOXSTART{entry.pk}'] = (
+                    f'{box_start}\n\n{content_start}')
+                shortcodes[f'CHANGELOGBOXEND{entry.pk}'] = box_end
+
+        def replace(match: re.Match) -> str:
+            shortcode = shortcodes.get(match.group(1))
+            return f'{shortcode}\n\n' if shortcode else ''
+
+        return LAYOUT_MARKER.sub(replace, document)
+
     # noinspection PyMethodMayBeStatic
     def _prepare_zip_archive(self, document, version_obj):
         """Prepare a ZIP file with the document and referenced images.
@@ -796,6 +855,7 @@ class VersionDownloadMd(VersionMixin, DetailView):
         document = self._convert_headers(document)
         # Remove CSS styles and classes
         document = re.sub(r'\{.*?\}', '', document)
+        document = self._add_layout_shortcodes(document, version_obj)
         # Use BeautifulSoup to extract image sources from HTML <img> tags
         images = []
         soup = BeautifulSoup(document, 'html.parser')
