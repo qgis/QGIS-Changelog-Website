@@ -825,8 +825,7 @@ class VersionDownloadMd(VersionMixin, DetailView):
                 params = {'layoutClass': 'rounded', 'id': f'{slug}-{number}'}
                 pr_url = (entry.github_PR_url or '').strip()
                 # A quote would end the attribute and break the Hugo build.
-                if (pr_url.startswith('https://github.com/')
-                        and '"' not in pr_url):
+                if (pr_url.startswith('https://github.com/') and '"' not in pr_url):
                     params['githubLink'] = pr_url
                 box_start = hugo_shortcode('rich-box-start', **params)
                 shortcodes[f'CHANGELOGBOXSTART{entry.pk}'] = (
